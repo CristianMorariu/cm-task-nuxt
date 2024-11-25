@@ -1,12 +1,9 @@
 <script setup>
-const dataNastere = ref(null);
-const pastWeeks = ref(0);
+//https://memento-mori-calendar.netlify.app/
+const dataNastere = ref("2000-10-08");
+const decadesLived = ref(0);
+const leftWeeksLived = ref(0);
 
-watch(dataNastere, (val) => {
-  // console.log(val);
-  pastWeeks.value = calculateWeeks(val);
-  console.log(data);
-});
 function calculateWeeks(birthDate) {
   const now = new Date();
   const birth = new Date(birthDate);
@@ -16,11 +13,17 @@ function calculateWeeks(birthDate) {
   const differenceInWeeks = Math.floor(
     differenceInTime / (1000 * 60 * 60 * 24 * 7)
   );
-  return differenceInWeeks;
+
+  decadesLived.value = Math.floor(differenceInWeeks / 520);
+  leftWeeksLived.value = Math.floor(differenceInWeeks % 520);
+  // console.log(decadesLived.value, leftWeeksLived.value);
 }
-const checkWeek = (week) => {
-  return pastWeeks <= week;
-};
+
+watch(dataNastere, (val) => {
+  calculateWeeks(val);
+  console.log(val);
+});
+if (dataNastere.value) calculateWeeks(dataNastere.value);
 </script>
 
 <template>
@@ -37,15 +40,28 @@ const checkWeek = (week) => {
   <div class="calendar">
     <div class="decade" v-for="nrOfDecades in 8" :key="nrOfDecades">
       <div class="decade-weeks">
-        <div
-          v-for="week in 520"
-          :key="week"
-          :class="{
-            square: true,
-            'decade-break': week % 26 === 0 && week % 52 !== 0,
-          }"
-        ></div>
-        <!-- enabled: checkWeek(week), -->
+        <div v-for="week in 520" :key="week">
+          <div
+            v-if="
+              decadesLived > 8 ||
+              decadesLived >= nrOfDecades ||
+              (nrOfDecades == decadesLived + 1 && leftWeeksLived >= week)
+            "
+            :class="[
+              'square',
+              'enabled',
+              { 'decade-break': week % 26 === 0 && week % 52 !== 0 },
+            ]"
+          ></div>
+          <div
+            v-else
+            :class="[
+              'square',
+              ,
+              { 'decade-break': week % 26 === 0 && week % 52 !== 0 },
+            ]"
+          ></div>
+        </div>
       </div>
       <div class="line-numbers">
         <span></span>
