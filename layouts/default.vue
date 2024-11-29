@@ -1,9 +1,9 @@
 <script setup></script>
 <template>
   <!-- py-2 pr-2 -->
-  <div class="flex bg-color min-h-screen">
-    <NavBar />
-    <div class="flex-grow border bg-white rounded-lg box-shadow m-2 p-4">
+  <div class="flex bg-color min-h-screen p-2">
+    <SideBar />
+    <div class="flex-grow border bg-white rounded-lg box-shadow p-4">
       <div class="flex justify-between">
         <nav class="flex mb-5" aria-label="Breadcrumb">
           <ol class="inline-flex items-center space-x-1 md:space-x-2">
