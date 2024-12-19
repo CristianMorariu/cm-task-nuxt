@@ -85,7 +85,7 @@
           </div>
         </div>
       </div>
-      <slot />
+      <div class="content mt-4"><slot /></div>
     </div>
   </div>
 </template>

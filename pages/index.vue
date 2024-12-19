@@ -24,11 +24,29 @@ watch(dataNastere, (val) => {
   console.log(val);
 });
 if (dataNastere.value) calculateWeeks(dataNastere.value);
+const isEnabled = (decade, week) => {
+  return (
+    decadesLived.value > 8 ||
+    decadesLived.value >= decade ||
+    (decade === decadesLived.value + 1 && leftWeeksLived.value >= week)
+  );
+};
+
+const computedWeeks = computed(() => {
+  return Array.from({ length: 520 }, (_, i) => {
+    const isDecadeBreak = i % 26 === 0 && i % 52 !== 0;
+    const isEnabled =
+      decadesLived.value > 8 ||
+      decadesLived.value >= nrOfDecades ||
+      (nrOfDecades === decadesLived.value + 1 && leftWeeksLived.value >= i);
+    return { isDecadeBreak, isEnabled };
+  });
+});
 </script>
 
 <template>
   <div class="flex gap-10">
-    <h1 class="font-bold text-4xl">Calendar</h1>
+    <h1 class="text-gray-800 text-2xl font-bold sm:text-3xl">Calendar</h1>
     <input
       v-model="dataNastere"
       type="date"
@@ -40,28 +58,15 @@ if (dataNastere.value) calculateWeeks(dataNastere.value);
   <div class="calendar">
     <div class="decade" v-for="nrOfDecades in 8" :key="nrOfDecades">
       <div class="decade-weeks">
-        <div v-for="week in 520" :key="week">
-          <div
-            v-if="
-              decadesLived > 8 ||
-              decadesLived >= nrOfDecades ||
-              (nrOfDecades == decadesLived + 1 && leftWeeksLived >= week)
-            "
-            :class="[
-              'square',
-              'enabled',
-              { 'decade-break': week % 26 === 0 && week % 52 !== 0 },
-            ]"
-          ></div>
-          <div
-            v-else
-            :class="[
-              'square',
-              ,
-              { 'decade-break': week % 26 === 0 && week % 52 !== 0 },
-            ]"
-          ></div>
-        </div>
+        <div
+          v-for="week in 520"
+          :key="week"
+          class="square"
+          :class="{
+            enabled: isEnabled(nrOfDecades, week),
+            'decade-break': week % 26 === 0 && week % 52 !== 0,
+          }"
+        ></div>
       </div>
       <div class="line-numbers">
         <span></span>
@@ -99,6 +104,7 @@ if (dataNastere.value) calculateWeeks(dataNastere.value);
   border: 1px solid #000;
   border-radius: 0.125rem /* 2px */;
 }
+
 .enabled {
   background-color: #2f4f4f;
 }

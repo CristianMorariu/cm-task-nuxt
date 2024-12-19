@@ -8,11 +8,11 @@
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center cursor-pointer">
           <IconsClipBoard />
-          <h3 class="ml-2 font-bold text-lg hidden sm:block">Web Title</h3>
+          <h3 class="ml-2 font-bold text-lg hidden md:block">Capacity</h3>
         </div>
       </div>
       <div>
-        <h4 class="font-serif font-thin text-gray-400 mb-2 hidden sm:block">
+        <h4 class="font-serif font-thin text-gray-400 mb-2 hidden md:block">
           GENERAL
         </h4>
         <ul class="flex flex-col space-y-2">
@@ -52,14 +52,14 @@
 }
 
 /* Stiluri responsive */
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .menu-item {
     display: block;
   }
 }
 
 /* Stiluri pentru ecrane mai mici */
-@media (max-width: 639px) {
+@media (max-width: 767px) {
   .slim {
     min-width: 60px;
     max-width: 60px;
