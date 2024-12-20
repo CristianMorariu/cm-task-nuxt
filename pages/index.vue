@@ -1,22 +1,35 @@
 <script setup>
 //https://memento-mori-calendar.netlify.app/
-const dataNastere = ref("2000-10-08");
+// https://memento-mori-calendar.vercel.app/
+const dataNastere = ref("2000-01-21");
+const nrOfDecades = 8;
 const decadesLived = ref(0);
 const leftWeeksLived = ref(0);
+const leftToLive = ref();
 
 function calculateWeeks(birthDate) {
   const now = new Date();
   const birth = new Date(birthDate);
   const differenceInTime = now - birth;
-
-  // Conversie la săptămâni
-  const differenceInWeeks = Math.floor(
-    differenceInTime / (1000 * 60 * 60 * 24 * 7)
-  );
-
-  decadesLived.value = Math.floor(differenceInWeeks / 520);
-  leftWeeksLived.value = Math.floor(differenceInWeeks % 520);
+  // const differenceInWeeks = Math.floor(
+  //   differenceInTime / (1000 * 60 * 60 * 24 * 7)
+  // );
+  // console.log(differenceInWeeks);
+  // Milisecunde într-un deceniu (10 ani * 365.25 zile/an * 24h * 60m * 60s * 1000ms)
+  const millisecondsInDecade = 10 * 365.25 * 24 * 60 * 60 * 1000;
+  // Milisecunde într-o săptămână (7 zile * 24h * 60m * 60s * 1000ms)
+  const millisecondsInWeek = 7 * 24 * 60 * 60 * 1000;
+  // Calculăm deceniile trăite
+  decadesLived.value = Math.floor(differenceInTime / millisecondsInDecade);
+  // Calculăm milisecundele rămase după deceniile trăite
+  const remainingMilliseconds = differenceInTime % millisecondsInDecade;
+  // Calculăm săptămânile rămase
+  leftWeeksLived.value = Math.floor(remainingMilliseconds / millisecondsInWeek);
   // console.log(decadesLived.value, leftWeeksLived.value);
+  let weeksSpent = decadesLived.value * 520 + leftWeeksLived.value;
+  // console.log(weeksSpent);
+  leftToLive.value = nrOfDecades * 520 - weeksSpent;
+  console.log(leftToLive.value);
 }
 
 watch(dataNastere, (val) => {
@@ -26,22 +39,10 @@ watch(dataNastere, (val) => {
 if (dataNastere.value) calculateWeeks(dataNastere.value);
 const isEnabled = (decade, week) => {
   return (
-    decadesLived.value > 8 ||
     decadesLived.value >= decade ||
-    (decade === decadesLived.value + 1 && leftWeeksLived.value >= week)
+    (decade === decadesLived.value + 1 && leftWeeksLived.value > week)
   );
 };
-
-const computedWeeks = computed(() => {
-  return Array.from({ length: 520 }, (_, i) => {
-    const isDecadeBreak = i % 26 === 0 && i % 52 !== 0;
-    const isEnabled =
-      decadesLived.value > 8 ||
-      decadesLived.value >= nrOfDecades ||
-      (nrOfDecades === decadesLived.value + 1 && leftWeeksLived.value >= i);
-    return { isDecadeBreak, isEnabled };
-  });
-});
 </script>
 
 <template>
@@ -54,24 +55,27 @@ const computedWeeks = computed(() => {
       id="dataNastere"
     />
   </div>
+  <p class="text-gray-600 mt-2 text-center">
+    Mai ai ≈ <span class="font-bold">{{ leftToLive }}</span> săptamani de trait.
+  </p>
 
   <div class="calendar">
-    <div class="decade" v-for="nrOfDecades in 8" :key="nrOfDecades">
+    <div class="decade" v-for="decade in nrOfDecades" :key="decade">
       <div class="decade-weeks">
         <div
           v-for="week in 520"
           :key="week"
           class="square"
           :class="{
-            enabled: isEnabled(nrOfDecades, week),
+            enabled: isEnabled(decade, week),
             'decade-break': week % 26 === 0 && week % 52 !== 0,
           }"
         ></div>
       </div>
       <div class="line-numbers">
         <span></span>
-        <span class="h-5">{{ nrOfDecades * 10 - 5 }}</span>
-        <span class="h-5">{{ nrOfDecades * 10 }}</span>
+        <span class="h-5">{{ decade * 10 - 5 }}</span>
+        <span class="h-5">{{ decade * 10 }}</span>
       </div>
     </div>
   </div>
@@ -92,7 +96,7 @@ const computedWeeks = computed(() => {
 .decade-weeks {
   display: grid;
   grid-template-columns: repeat(52, auto);
-  row-gap: 4px;
+  row-gap: 5px;
   column-gap: 4px;
 }
 .decade-break {
