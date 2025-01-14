@@ -24,11 +24,25 @@
             <li class="menu-item">Calendar</li>
           </NuxtLink>
           <NuxtLink
+            :to="{ name: 'pomo-tracker' }"
+            class="flex items-center sidebar-item hover:bg-slate-400 rounded"
+          >
+            <IconsTomato class="min-w-10" />
+            <li class="menu-item">Pomo Tracker</li>
+          </NuxtLink>
+          <NuxtLink
             :to="{ name: 'task-tracker' }"
             class="flex items-center sidebar-item hover:bg-slate-400 rounded"
           >
             <IconsTaskTracker class="min-w-10" />
             <li class="menu-item">Task Tracker</li>
+          </NuxtLink>
+          <NuxtLink
+            :to="{ name: 'useful-websites' }"
+            class="flex items-center sidebar-item hover:bg-slate-400 rounded"
+          >
+            <IconsWebsite class="min-w-10" />
+            <li class="menu-item">Useful Website</li>
           </NuxtLink>
         </ul>
       </div>
