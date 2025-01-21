@@ -18,7 +18,7 @@ function capitalizeFirstLetter(val) {
   return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 }
 const numDays = (y, m) => new Date(y, m, 0).getDate();
-console.log(month);
+// console.log(month);
 let year = 2024;
 let month1 = 2;
 let numberOfDays = numDays(year, month1);
@@ -31,7 +31,7 @@ const habits = ref([
   { id: 2, name: "Citit" },
   { id: 3, name: "Meditatie DEdfADe" },
   { id: 4, name: "Meditatie dasdasdad" },
-  { id: 3, name: "Meditatiedsa " },
+  // { id: 3, name: "Meditatiedsa " },
   // { id: 3, name: "Meditatie gdfgd ffsd sdfsfssdf" },
   // { id: 3, name: "Meditatiefsdf s d hfewwwwwwwwww" },
   // { id: 3, name: "Meditatiefsdf s d hfewwwwwwwwww" },
@@ -42,10 +42,10 @@ const habits = ref([
   // { id: 6, name: "Meditatiefsdf s d hfewwwdasadadaswwwwwww" },
 ]);
 const numberOfHabits = habits.value.length; // Schimbat pentru a folosi length corect
-console.log(numberOfHabits);
+// console.log(numberOfHabits);
 
 watch(habitTracker.value, (val) => {
-  // console.table(val);
+  console.table(val);
 });
 
 for (let i = 0; i < numberOfDays; i++) {
@@ -60,7 +60,7 @@ const toggleHabit = (dayIndex, habitIndex) => {
   habitTracker.value[dayIndex][habitIndex] =
     !habitTracker.value[dayIndex][habitIndex];
 
-  // console.log(habitTracker.value[dayIndex][habitIndex]);
+  // console.table(habitTracker.value[dayIndex][habitIndex]);
 };
 </script>
 
@@ -123,6 +123,16 @@ const toggleHabit = (dayIndex, habitIndex) => {
               </td>
             </tr>
           </tbody>
+          <tfoot
+            class="bg-gray-50 text-gray-600 font-medium border-b cursor-default"
+          >
+            <tr class="divide-x">
+              <th class="py-2 px-1">Total</th>
+              <th class="py-2 px-4" v-for="habit in habits" :key="habit.id">
+                {{ habit.name }}
+              </th>
+            </tr>
+          </tfoot>
         </table>
       </div>
 

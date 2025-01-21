@@ -8,7 +8,9 @@
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center cursor-pointer">
           <IconsClipBoard />
-          <h3 class="ml-2 font-bold text-lg hidden md:block">Capacity</h3>
+          <h3 class="ml-2 font-bold text-lg hidden md:block">
+            {{ true ? "Task Tracker" : "Capacity" }}
+          </h3>
         </div>
       </div>
       <div>
@@ -19,6 +21,7 @@
           <NuxtLink
             :to="{ name: 'index' }"
             class="flex items-center sidebar-item hover:bg-slate-400 rounded"
+            active-class="bg-slate-300"
           >
             <IconsCalendar class="min-w-10" />
             <li class="menu-item">Calendar</li>
@@ -26,6 +29,7 @@
           <NuxtLink
             :to="{ name: 'pomo-tracker' }"
             class="flex items-center sidebar-item hover:bg-slate-400 rounded"
+            active-class="bg-slate-300"
           >
             <IconsTomato class="min-w-10" />
             <li class="menu-item">Pomo Tracker</li>
@@ -33,6 +37,7 @@
           <NuxtLink
             :to="{ name: 'task-tracker' }"
             class="flex items-center sidebar-item hover:bg-slate-400 rounded"
+            active-class="bg-slate-300"
           >
             <IconsTaskTracker class="min-w-10" />
             <li class="menu-item">Task Tracker</li>
@@ -40,6 +45,7 @@
           <NuxtLink
             :to="{ name: 'useful-websites' }"
             class="flex items-center sidebar-item hover:bg-slate-400 rounded"
+            active-class="bg-slate-300"
           >
             <IconsWebsite class="min-w-10" />
             <li class="menu-item">Useful Website</li>

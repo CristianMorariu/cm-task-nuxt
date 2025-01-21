@@ -1,7 +1,7 @@
 <script setup></script>
 <template>
   <!-- py-2 pr-2 -->
-  <div class="flex bg-color min-h-screen p-2">
+  <div class="flex bg-color min-h-screen p-2 font-body">
     <SideBar />
     <div class="flex-grow border bg-white rounded-lg box-shadow p-4">
       <div class="flex justify-between">
@@ -70,7 +70,7 @@
           </ol>
         </nav>
         <!-- user -->
-        <div class="flex items-center border rounded-lg p-2 h-16">
+        <!-- <div class="flex items-center border rounded-lg p-2 h-16">
           <div class="relative">
             <img
               class="h-12 w-12 rounded-md object-cover"
@@ -83,7 +83,7 @@
             <h2 class="font-bold text-gray-800 text-lg">Jane Doe</h2>
             <p class="text-sm font text-gray-600">Software Engineer</p>
           </div>
-        </div>
+        </div> -->
       </div>
       <div class="content mt-4"><slot /></div>
     </div>

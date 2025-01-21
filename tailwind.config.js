@@ -9,7 +9,11 @@ export default {
     "./error.vue",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        body: ["Parkinsans", "Montserrat", "Raleway", "Quicksand"],
+      },
+    },
   },
   plugins: [],
 };

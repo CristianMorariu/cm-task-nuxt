@@ -2,39 +2,37 @@
 //https://memento-mori-calendar.netlify.app/
 // https://memento-mori-calendar.vercel.app/
 const dataNastere = ref("2000-01-21");
+// const dataNastere = ref("2000-10-08");
+const now = new Date();
 const nrOfDecades = 8;
 const decadesLived = ref(0);
 const leftWeeksLived = ref(0);
 const leftToLive = ref();
+let isYourBirthday;
 
 function calculateWeeks(birthDate) {
-  const now = new Date();
   const birth = new Date(birthDate);
+  isYourBirthday =
+    now.getMonth() == birth.getMonth() && now.getDate() == birth.getDate()
+      ? true
+      : false;
+
   const differenceInTime = now - birth;
-  // const differenceInWeeks = Math.floor(
-  //   differenceInTime / (1000 * 60 * 60 * 24 * 7)
-  // );
-  // console.log(differenceInWeeks);
+  // const differenceInWeeks = Math.floor(differenceInTime / (1000 * 60 * 60 * 24 * 7));
   // Milisecunde într-un deceniu (10 ani * 365.25 zile/an * 24h * 60m * 60s * 1000ms)
   const millisecondsInDecade = 10 * 365.25 * 24 * 60 * 60 * 1000;
-  // Milisecunde într-o săptămână (7 zile * 24h * 60m * 60s * 1000ms)
-  const millisecondsInWeek = 7 * 24 * 60 * 60 * 1000;
-  // Calculăm deceniile trăite
-  decadesLived.value = Math.floor(differenceInTime / millisecondsInDecade);
-  // Calculăm milisecundele rămase după deceniile trăite
-  const remainingMilliseconds = differenceInTime % millisecondsInDecade;
-  // Calculăm săptămânile rămase
-  leftWeeksLived.value = Math.floor(remainingMilliseconds / millisecondsInWeek);
-  // console.log(decadesLived.value, leftWeeksLived.value);
+  const millisecondsInWeek = 7 * 24 * 60 * 60 * 1000; // Milisecunde într-o săptămână
+  decadesLived.value = Math.floor(differenceInTime / millisecondsInDecade); //deceniile trăite
+  const remainingMilliseconds = differenceInTime % millisecondsInDecade; //milisecundele rămase după deceniile trăite
+  leftWeeksLived.value = Math.floor(remainingMilliseconds / millisecondsInWeek); //săptămânile rămase
   let weeksSpent = decadesLived.value * 520 + leftWeeksLived.value;
-  // console.log(weeksSpent);
+  // console.log((leftWeeksLived.value % 52) - 1); //saptamani traite din anul curent
   leftToLive.value = nrOfDecades * 520 - weeksSpent;
-  console.log(leftToLive.value);
 }
 
 watch(dataNastere, (val) => {
   calculateWeeks(val);
-  console.log(val);
+  // console.log(val);
 });
 if (dataNastere.value) calculateWeeks(dataNastere.value);
 const isEnabled = (decade, week) => {
@@ -56,9 +54,16 @@ const isEnabled = (decade, week) => {
     />
   </div>
   <p class="text-gray-600 mt-2 text-center">
-    Mai ai ≈ <span class="font-bold">{{ leftToLive }}</span> săptamani de trait.
+    Mai sunt
+    <span class="font-bold">{{ 52 - ((leftWeeksLived % 52) - 1) }}</span> de
+    săptămâni până la ziua ta
   </p>
-
+  <p v-if="!isYourBirthday" class="text-gray-600 mt-2 text-center">
+    și <span class="font-bold">≈ {{ leftToLive }}</span> de săptamani de trait.
+  </p>
+  <p v-else class="text-gray-600 mt-2 text-center">
+    <span class="font-extrabold text-3xl">La mulți ani!{{ "\u{1F973}" }}</span>
+  </p>
   <div class="calendar">
     <div class="decade" v-for="decade in nrOfDecades" :key="decade">
       <div class="decade-weeks">
