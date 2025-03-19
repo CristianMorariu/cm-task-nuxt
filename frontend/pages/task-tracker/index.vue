@@ -1,4 +1,6 @@
 <script setup>
+import axios from "axios";
+
 const today = new Date();
 const formatter = new Intl.DateTimeFormat("ro", {
   weekday: "long", // Pentru "Luni", "Marți", etc.
@@ -45,7 +47,7 @@ const numberOfHabits = habits.value.length; // Schimbat pentru a folosi length c
 // console.log(numberOfHabits);
 
 watch(habitTracker.value, (val) => {
-  console.table(val);
+  // console.table(val);
 });
 
 for (let i = 0; i < numberOfDays; i++) {
@@ -62,6 +64,16 @@ const toggleHabit = (dayIndex, habitIndex) => {
 
   // console.table(habitTracker.value[dayIndex][habitIndex]);
 };
+const data = ref();
+onMounted(() => {
+  axios
+    .get("http://localhost:8002/api/tasks")
+    .then((response) => {
+      data.value = response.data;
+      console.log(data.value);
+    })
+    .catch((error) => console.log(error));
+});
 </script>
 
 <template>
