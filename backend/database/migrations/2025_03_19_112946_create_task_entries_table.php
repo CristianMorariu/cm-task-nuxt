@@ -14,10 +14,8 @@ return new class extends Migration
         Schema::create('task_entries', function (Blueprint $table) {
             $table->id();
             $table->foreignId("task_id")->constrained();
-            $table->unsignedTinyInteger('day');
-            $table->unsignedTinyInteger('month');
-            $table->unsignedSmallInteger('year');
-            $table->boolean('is_completed')->default(null);
+            $table->dateTime('date');
+            $table->boolean('is_completed');
             $table->timestamps();
         });
     }

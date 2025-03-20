@@ -1,7 +1,10 @@
 <script setup>
 import axios from "axios";
 
+const addTaskModal = ref(false);
+const taskName = ref(null);
 const today = new Date();
+// console.log(today);
 const formatter = new Intl.DateTimeFormat("ro", {
   weekday: "long", // Pentru "Luni", "Marți", etc.
   day: "numeric", // Pentru ziua lunii
@@ -13,9 +16,7 @@ const { weekday, day, month } = formatter
     acc[part.type] = part.value;
     return acc;
   }, {});
-// console.log(weekday); // ex: "luni"
-// console.log(day); // ex: "18"
-// console.log(month); // ex: "decembrie"
+
 function capitalizeFirstLetter(val) {
   return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 }
@@ -64,13 +65,26 @@ const toggleHabit = (dayIndex, habitIndex) => {
 
   // console.table(habitTracker.value[dayIndex][habitIndex]);
 };
-const data = ref();
+
+const createTask = () => {
+  axios
+    .post("http://localhost:8002/api/tasks", { name: taskName.value })
+    .then((response) => {
+      habits.value = response.data.data;
+      addTaskModal.value = false;
+      taskName.value = null;
+      console.log(response.data.data);
+    })
+    .catch((error) => console.log(error));
+  // console.log(taskName.value);
+};
+
 onMounted(() => {
   axios
     .get("http://localhost:8002/api/tasks")
     .then((response) => {
-      data.value = response.data;
-      console.log(data.value);
+      habits.value = response.data.data;
+      console.log(habits.value);
     })
     .catch((error) => console.log(error));
 });
@@ -80,8 +94,16 @@ onMounted(() => {
   <!-- <div>Daily Habit/Habit Tracker</div> -->
   <!-- <h1 class="font-bold text-3xl mb-2">Daily Habit</h1> -->
   <div class="max-w-screen-xl mx-auto">
-    <div class="max-w-lg">
+    <div class="flex gap-10">
       <h3 class="text-gray-800 text-2xl font-bold sm:text-3xl">Daily Habit</h3>
+      <button
+        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+        @click="addTaskModal = true"
+      >
+        <span class="text-sm">Adaugă task</span>
+      </button>
+    </div>
+    <div class="max-w-lg">
       <!-- <p class="text-gray-600 mt-2">
           Lorem Ipsum is simply dummy text of the printing and typesetting
           industry.
@@ -211,6 +233,80 @@ onMounted(() => {
               </span>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    v-if="addTaskModal"
+    id="modal"
+    class="fixed inset-0 z-50 flex items-center justify-center"
+  >
+    <div class="fixed inset-0 bg-black/50"></div>
+    <div
+      class="relative w-full max-w-md p-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl"
+    >
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+          Add a task
+        </h3>
+        <button
+          @click="addTaskModal = false"
+          id="closeModalButton"
+          class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+        >
+          <svg
+            class="h-4 w-4 inline-block ml-2"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            aria-hidden="true"
+            data-slot="icon"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18 18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label
+            for="name"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >Name</label
+          >
+          <input
+            v-model="taskName"
+            type="text"
+            id="name"
+            class="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
+            required
+          />
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button
+            @click="addTaskModal = false"
+            id="cancelButton"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+          >
+            Cancel
+          </button>
+          <button
+            id="submitUrlButton"
+            class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition duration-300"
+            @click="createTask()"
+            type="submit"
+          >
+            Confirm
+          </button>
         </div>
       </div>
     </div>

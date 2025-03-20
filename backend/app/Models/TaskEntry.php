@@ -10,9 +10,9 @@ class TaskEntry extends Model
 {
     /** @use HasFactory<\Database\Factories\TaskEntryFactory> */
     use HasFactory;
-
+    // guarded 
     protected $fillable=[
-        "day", 'month', 'year', 'is_completed'
+        "task_id", 'date', 'is_completed'
     ];
 
     public function task():BelongsTo{

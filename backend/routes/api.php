@@ -14,3 +14,4 @@ Route::get('tasks/{task}',[TaskController::class, 'show']);
 Route::post('tasks',[TaskController::class,'store']);
 
 Route::get('task-entry',[TaskEntriesController::class,'index']);
+Route::post('task-entry',[TaskEntriesController::class,'updateOrCreate']);
