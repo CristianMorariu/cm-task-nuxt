@@ -11,4 +11,10 @@ class Task extends Model
     use HasFactory;
 
     protected $fillable =['name'];
+
+    public function entries() {
+        return $this->hasMany(TaskEntry::class);
+    }
+
+
 }

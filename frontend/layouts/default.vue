@@ -5,7 +5,7 @@
     <SideBar />
     <div class="flex-grow border bg-white rounded-lg box-shadow p-4">
       <div class="flex justify-between">
-        <nav class="flex mb-5" aria-label="Breadcrumb">
+        <nav class="flex mb-2" aria-label="Breadcrumb">
           <ol class="inline-flex items-center space-x-1 md:space-x-2">
             <li class="inline-flex items-center">
               <a
@@ -85,7 +85,7 @@
           </div>
         </div> -->
       </div>
-      <div class="content mt-4"><slot /></div>
+      <div class="content mt-2"><slot /></div>
     </div>
   </div>
 </template>

@@ -17,6 +17,7 @@ class TaskResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'entries' =>TaskEntriesResource::collection($this->whenLoaded('entries'))
         ];
         // return parent::toArray($request);
     }
