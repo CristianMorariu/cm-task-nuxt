@@ -3,24 +3,34 @@ import axios from "axios";
 
 const addTaskModal = ref(false);
 const taskName = ref(null);
-const habits = ref();
+const tasks = ref();
 const currentDate = ref();
-const habitTracker = ref([]);
 const day = ref();
 const month = ref();
 const daysInMonth = ref();
 const dateName = ref();
 
-const toggleHabit = (day, habitIndex) => {
-  habitTracker.value[day][habitIndex] = !habitTracker.value[day][habitIndex];
-  // console.table(habitTracker.value[day][habitIndex]);
+const fetchTasks = () => {
+  axios
+    .get("http://localhost:8002/api/tasks")
+    .then((response) => {
+      console.log(response.data.current_date);
+      currentDate.value = new Date(
+        response.data.current_date
+      ).toLocaleDateString();
+      dateName.value = response.data.dateName;
+      console.log(dateName.value);
+      daysInMonth.value = response.data.days_in_month;
+      tasks.value = response.data.data;
+      console.log(daysInMonth.value, tasks.value);
+    })
+    .catch((error) => console.log(error));
 };
-
 const createTask = () => {
   axios
     .post("http://localhost:8002/api/tasks", { name: taskName.value })
     .then((response) => {
-      habits.value = response.data.data;
+      fetchTasks();
       addTaskModal.value = false;
       taskName.value = null;
       console.log(response.data.data);
@@ -28,30 +38,42 @@ const createTask = () => {
     .catch((error) => console.log(error));
   // console.log(taskName.value);
 };
-
+const toggleTask = (day, taskId, entries, completed) => {
+  let date = new Date();
+  date.setDate(day);
+  // console.log(date, day, taskId);
+  console.log(entries);
+  completed = 0;
+  let isCompleted = completed;
+  if (typeof completed === String) isCompleted = 1;
+  else if (completed == 1) isCompleted = 0;
+  else isCompleted = 1;
+  console.log(typeof isCompleted);
+  //   axios
+  //     .post("http://localhost:8002/api/task-entry", { task_id: taskId,date, is_completed  })
+  //     .then((response) => {
+  //       fetchTasks();
+  //       addTaskModal.value = false;
+  //       taskName.value = null;
+  //       console.log(response.data.data);
+  //     })
+  //     .catch((error) => console.log(error));
+};
+function getCompletionStatus(entries, day) {
+  const entry = entries.find((e) => e.day === day);
+  return entry ? entry.is_completed : "\u00A0"; // non-breaking space
+}
 onMounted(() => {
-  axios
-    .get("http://localhost:8002/api/tasks")
-    .then((response) => {
-      currentDate.value = new Date(
-        response.data.currentDate
-      ).toLocaleDateString();
-      dateName.value = response.data.dateName;
-      console.log(dateName.value);
-      daysInMonth.value = response.data.days_in_month;
-      habits.value = response.data.data;
-      console.log(daysInMonth.value, habits.value);
-    })
-    .catch((error) => console.log(error));
+  fetchTasks();
 });
 </script>
 
 <template>
-  <!-- <div>Daily Habit/Habit Tracker</div> -->
-  <!-- <h1 class="font-bold text-3xl mb-2">Daily Habit</h1> -->
+  <!-- <div>Daily Task/Task Tracker</div> -->
+  <!-- <h1 class="font-bold text-3xl mb-2">Daily Task</h1> -->
   <div class="max-w-screen-xl mx-auto">
     <div class="flex gap-10">
-      <h3 class="text-gray-800 text-2xl font-bold sm:text-3xl">Daily Habit</h3>
+      <h3 class="text-gray-800 text-2xl font-bold sm:text-3xl">Daily Task</h3>
       <button
         class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
         @click="addTaskModal = true"
@@ -66,15 +88,18 @@ onMounted(() => {
         </p> -->
     </div>
     <div class="flex mt-2 justify-between">
-      <div class="shadow-sm border rounded-lg overflow-x-auto">
+      <div
+        v-if="tasks && tasks.length > 0"
+        class="shadow-sm border rounded-lg overflow-x-auto"
+      >
         <table class="w-full table-auto text-sm text-left">
           <thead
             class="bg-gray-50 text-gray-600 font-medium border-b cursor-default"
           >
             <tr class="divide-x">
               <th class="py-2 px-1">Ziua</th>
-              <th class="py-2 px-4" v-for="habit in habits" :key="habit.id">
-                {{ habit.name }}
+              <th class="py-2 px-4" v-for="task in tasks" :key="task.id">
+                {{ task.name }}
               </th>
             </tr>
           </thead>
@@ -87,27 +112,30 @@ onMounted(() => {
               </td>
 
               <!-- <td
-                v-for="habit in habits"
-                :key="habit.id"
+                v-for="task in tasks"
+                :key="task.id"
                 class="text-center gap-x-6 border-y border-[#ccc] cursor-default"
               >
-                <span>{{ habit.id }}</span>
+                <span>{{ task.id }}</span>
               </td> -->
 
-              <td class="border" v-for="habbit in habits" :key="habbit.id">
+              <td
+                class="border text-center"
+                v-for="task in tasks"
+                :key="task.id"
+              >
                 <div
-                  class="p-1 text-center"
-                  @click="toggleHabit(day, habbit.id)"
+                  @click="
+                    toggleTask(
+                      day,
+                      task.id,
+                      task.entries,
+                      getCompletionStatus(task.entries, day)
+                    )
+                  "
+                  class="h-full w-full"
                 >
-                  <!-- Afișează ✔️ dacă e true, ❌ dacă e false, și lasă gol dacă e null -->
-                  <template v-if="habitTracker[day][habitIndex] === true"
-                    >✔️</template
-                  >
-                  <template v-else-if="habitTracker[day][habitIndex] === false"
-                    >❌</template
-                  >
-                  <template v-else><div class="h-5"></div></template>
-                  <!-- Celulă goală pentru null -->
+                  {{ getCompletionStatus(task.entries, day) }}
                 </div>
               </td>
 
@@ -119,13 +147,15 @@ onMounted(() => {
           >
             <tr class="divide-x">
               <th class="py-2 px-1">Total</th>
-              <th class="py-2 px-4" v-for="habit in habits" :key="habit.id">
-                -
-              </th>
+              <th class="py-2 px-4" v-for="task in tasks" :key="task.id">-</th>
             </tr>
           </tfoot>
         </table>
       </div>
+      <div v-else-if="tasks && tasks.length == 0">
+        <p>Nu exista nici un task. Adauga un task nou pentru a incepe</p>
+      </div>
+      <div v-else><p>Se încarcă!</p></div>
 
       <!-- miniCalendar -->
       <div
