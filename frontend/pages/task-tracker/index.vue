@@ -5,22 +5,18 @@ const addTaskModal = ref(false);
 const taskName = ref(null);
 const tasks = ref();
 const currentDate = ref();
-const day = ref();
 const daysInMonth = ref();
-const dateName = ref();
+const date = ref();
 
 const fetchTasks = () => {
   axios
     .get("http://localhost:8002/api/tasks")
     .then((response) => {
-      currentDate.value = new Date(
-        response.data.current_date
-      ).toLocaleDateString();
-      dateName.value = response.data.dateName;
-      // console.log(dateName.value);
+      date.value = response.data.date;
+      currentDate.value = new Date(date.value.currentDate);
+
       daysInMonth.value = response.data.days_in_month;
       tasks.value = response.data.data;
-      // console.log(daysInMonth.value, tasks.value);
     })
     .catch((error) => console.log(error));
 };
@@ -35,7 +31,19 @@ const createTask = () => {
     })
     .catch((error) => console.log(error));
 };
-const switchEntryStatus = (newEntry) => {
+const toggleTask = (day, taskId, entries) => {
+  let date = new Date();
+  date.setDate(day);
+  date = date.toISOString().split("T")[0];
+
+  let entry = entries.find((e) => e.day === day);
+  let newEntry = {
+    task_id: taskId,
+    date,
+    is_completed: entry ? entry.is_completed : "\u00A0",
+  };
+
+  // switchEntryStatus
   if (newEntry.is_completed === 1) {
     newEntry.is_completed = 0;
   } else if (newEntry.is_completed === 0) {
@@ -52,27 +60,10 @@ const switchEntryStatus = (newEntry) => {
       fetchTasks();
     })
     .catch((error) => console.log(error));
-};
-const toggleTask = (day, taskId, entries) => {
-  let date = new Date();
-  date.setDate(day);
-  date = date.toISOString().split("T")[0];
-
-  let entry = entries.find((e) => e.day === day);
-  console.log(entry);
-  let newEntry = {
-    task_id: taskId,
-    date,
-    is_completed: entry ? entry.is_completed : "\u00A0",
-  };
-  // daca se salveaza entry.is_completed : null in bd iar nu mai poti da click pe cellul ala si de aia nu se apeleaza functia
-  switchEntryStatus(newEntry);
-
   //fac request sa iau toate entries de pe id
 };
 function getCompletionStatus(entries, day) {
   const entry = entries.find((e) => e.day === day);
-  // console.log(entry);
   return entry && entry.is_completed != null ? entry.is_completed : "\u00A0"; // non-breaking space
 }
 onMounted(() => {
@@ -170,19 +161,23 @@ onMounted(() => {
           class="w-32 flex-none rounded-t lg:rounded-t-none lg:rounded-l text-center shadow-lg"
         >
           <div class="block rounded-t overflow-hidden text-center">
-            <div class="bg-blue-500 text-white py-1">dasd</div>
+            <div class="bg-blue-500 text-white py-1">{{ date?.dayName }}</div>
             <div class="pt-1 border-l border-r border-white bg-white">
-              <span class="text-5xl font-bold leading-tight"> {{ day }} </span>
+              <span class="text-5xl font-bold leading-tight">
+                {{ currentDate?.getDate() }}
+              </span>
             </div>
             <div
               class="border-l border-r border-b rounded-b-lg text-center border-white bg-white -pt-2 -mb-1"
             >
-              <span class="text-sm"> dsad </span>
+              <span class="text-sm"> {{ date?.monthName }} </span>
             </div>
             <div
               class="pb-2 border-l border-r border-b rounded-b-lg text-center border-white bg-white"
             >
-              <span class="text-xs leading-normal"> dsd </span>
+              <span class="text-xs leading-normal">
+                {{ currentDate?.getFullYear() }}
+              </span>
             </div>
           </div>
         </div>

@@ -15,11 +15,12 @@ class TaskController extends Controller
         $today =Carbon::today();
         $tasks = Task::with('entries')->get();
         $response =[
-            'dateName' =>[
-                'day' =>$today->dayName,
-                'month'=>$today->monthName],
+            'date' =>[
+                'currentDate' => $today->toDateString(),
+                'dayName' =>$today->dayName,
+                'monthName'=>$today->monthName,
+            ],
                 // 'task_count' => $tasks->count(),
-            'current_date' => $today,
             'days_in_month' => $today->daysInMonth,
             'data'=> TaskResource::collection($tasks),
             
