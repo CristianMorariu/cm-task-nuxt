@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId("task_id")->constrained();
             $table->dateTime('date');
-            $table->boolean('is_completed');
+            $table->boolean('is_completed')->nullable();
             $table->timestamps();
         });
     }

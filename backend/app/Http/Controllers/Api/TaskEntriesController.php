@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TaskEntriesResource;
+use App\Models\Task;
 use App\Models\TaskEntry;
 use Illuminate\Http\Request;
 
@@ -26,5 +27,9 @@ class TaskEntriesController extends Controller
         );
         // return response()->json(['message' => 'Task entry saved!', 'entry' => $entry]);
         return new TaskEntriesResource($newEntry);
+    }
+    public function show($task_id){
+        $taskEntries = TaskEntry::where('task_id',$task_id)->get();
+        return TaskEntriesResource::collection($taskEntries);    
     }
 }

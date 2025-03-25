@@ -6,7 +6,6 @@ const taskName = ref(null);
 const tasks = ref();
 const currentDate = ref();
 const day = ref();
-const month = ref();
 const daysInMonth = ref();
 const dateName = ref();
 
@@ -14,15 +13,14 @@ const fetchTasks = () => {
   axios
     .get("http://localhost:8002/api/tasks")
     .then((response) => {
-      console.log(response.data.current_date);
       currentDate.value = new Date(
         response.data.current_date
       ).toLocaleDateString();
       dateName.value = response.data.dateName;
-      console.log(dateName.value);
+      // console.log(dateName.value);
       daysInMonth.value = response.data.days_in_month;
       tasks.value = response.data.data;
-      console.log(daysInMonth.value, tasks.value);
+      // console.log(daysInMonth.value, tasks.value);
     })
     .catch((error) => console.log(error));
 };
@@ -36,32 +34,46 @@ const createTask = () => {
       console.log(response.data.data);
     })
     .catch((error) => console.log(error));
-  // console.log(taskName.value);
 };
-const toggleTask = (day, taskId, entries, completed) => {
+const switchEntryStatus = (newEntry) => {
+  if (newEntry.is_completed === 1) {
+    newEntry.is_completed = 0;
+  } else if (newEntry.is_completed === 0) {
+    newEntry.is_completed = null;
+  } else if (
+    newEntry.is_completed === null ||
+    newEntry.is_completed === "\u00A0"
+  ) {
+    newEntry.is_completed = 1;
+  }
+  axios
+    .post("http://localhost:8002/api/task-entry", newEntry)
+    .then((response) => {
+      fetchTasks();
+    })
+    .catch((error) => console.log(error));
+};
+const toggleTask = (day, taskId, entries) => {
   let date = new Date();
   date.setDate(day);
-  // console.log(date, day, taskId);
-  console.log(entries);
-  completed = 0;
-  let isCompleted = completed;
-  if (typeof completed === String) isCompleted = 1;
-  else if (completed == 1) isCompleted = 0;
-  else isCompleted = 1;
-  console.log(typeof isCompleted);
-  //   axios
-  //     .post("http://localhost:8002/api/task-entry", { task_id: taskId,date, is_completed  })
-  //     .then((response) => {
-  //       fetchTasks();
-  //       addTaskModal.value = false;
-  //       taskName.value = null;
-  //       console.log(response.data.data);
-  //     })
-  //     .catch((error) => console.log(error));
+  date = date.toISOString().split("T")[0];
+
+  let entry = entries.find((e) => e.day === day);
+  console.log(entry);
+  let newEntry = {
+    task_id: taskId,
+    date,
+    is_completed: entry ? entry.is_completed : "\u00A0",
+  };
+  // daca se salveaza entry.is_completed : null in bd iar nu mai poti da click pe cellul ala si de aia nu se apeleaza functia
+  switchEntryStatus(newEntry);
+
+  //fac request sa iau toate entries de pe id
 };
 function getCompletionStatus(entries, day) {
   const entry = entries.find((e) => e.day === day);
-  return entry ? entry.is_completed : "\u00A0"; // non-breaking space
+  // console.log(entry);
+  return entry && entry.is_completed != null ? entry.is_completed : "\u00A0"; // non-breaking space
 }
 onMounted(() => {
   fetchTasks();
@@ -125,14 +137,7 @@ onMounted(() => {
                 :key="task.id"
               >
                 <div
-                  @click="
-                    toggleTask(
-                      day,
-                      task.id,
-                      task.entries,
-                      getCompletionStatus(task.entries, day)
-                    )
-                  "
+                  @click="toggleTask(day, task.id, task.entries)"
                   class="h-full w-full"
                 >
                   {{ getCompletionStatus(task.entries, day) }}
