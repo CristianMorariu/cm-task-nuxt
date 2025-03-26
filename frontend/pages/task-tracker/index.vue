@@ -129,9 +129,18 @@ onMounted(() => {
               >
                 <div
                   @click="toggleTask(day, task.id, task.entries)"
-                  class="h-full w-full"
+                  class="flex justify-center"
                 >
-                  {{ getCompletionStatus(task.entries, day) }}
+                  <!-- {{ getCompletionStatus(task.entries, day) }} -->
+                  <IconsCheck
+                    class="text-green-500 scale-150"
+                    v-if="getCompletionStatus(task.entries, day) === 1"
+                  />
+                  <IconsClose
+                    class="text-red-500 scale-150"
+                    v-else-if="getCompletionStatus(task.entries, day) === 0"
+                  />
+                  <div v-else>{{ "\u00A0" }}</div>
                 </div>
               </td>
 
