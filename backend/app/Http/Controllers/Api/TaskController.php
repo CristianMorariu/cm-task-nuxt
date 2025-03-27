@@ -34,6 +34,9 @@ class TaskController extends Controller
     }
 
     public function store(Request $request){
+        $request->validate([
+        'name'=>'required|String',
+        ]);
         $task = Task::create($request->all());
 
         return new TaskResource($task);

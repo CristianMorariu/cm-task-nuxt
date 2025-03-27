@@ -17,6 +17,7 @@ const fetchTasks = () => {
 
       daysInMonth.value = response.data.days_in_month;
       tasks.value = response.data.data;
+      console.log(tasks.value);
     })
     .catch((error) => console.log(error));
 };
@@ -152,7 +153,9 @@ onMounted(() => {
           >
             <tr class="divide-x">
               <th class="py-2 px-1">Total</th>
-              <th class="py-2 px-4" v-for="task in tasks" :key="task.id">-</th>
+              <th class="py-2 px-4" v-for="task in tasks" :key="task.id">
+                {{ task.completion_percentage }}%
+              </th>
             </tr>
           </tfoot>
         </table>
