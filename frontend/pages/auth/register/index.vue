@@ -1,0 +1,102 @@
+<script setup>
+definePageMeta({
+  layout: "auth-layout",
+});
+</script>
+<template>
+  <form class="login-form">
+    <label for="username">Enter Email </label>
+    <input type="email" id="username" placeholder="Email" />
+
+    <label for="password">Enter Password</label>
+    <input
+      type="password"
+      id="password"
+      placeholder="Password"
+      autocomplete="off"
+    />
+
+    <!-- <div class="remember-me">
+      <input type="checkbox" id="remember" />
+      <div for="remember">Keep me logged in</div>
+    </div> -->
+
+    <button class="login-btn">REGISTER</button>
+
+    <!-- <NuxtLink to="/auth/register" class="create-account">
+      Create account
+    </NuxtLink> -->
+    <!-- <div class="recover-password">Recover password</div> -->
+  </form>
+</template>
+
+<style scoped>
+.login-form {
+  display: flex;
+  padding: 50px;
+  flex-direction: column;
+  align-items: center;
+}
+
+label {
+  display: flex;
+  justify-content: center;
+  font-size: 14px;
+  margin-bottom: 5px;
+  width: 100%;
+  text-align: left;
+  color: #555;
+}
+
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  text-align: center;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.3s;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: #ffbf00;
+}
+
+/* Checkbox-ul și label-ul */
+.remember-me {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.remember-me input {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+  accent-color: #ffbf00;
+}
+
+/* Butonul LOGIN */
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #ffbf00;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.login-btn:hover {
+  background-color: #e6a500;
+}
+</style>
