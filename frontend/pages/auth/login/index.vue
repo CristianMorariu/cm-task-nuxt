@@ -1,17 +1,39 @@
 <script setup>
+import axios from "@/axios";
+
 definePageMeta({
   layout: "auth-layout",
 });
 
-const router = useRouter();
+const data = ref({
+  email: "",
+  password: "",
+});
+
+const submit = () => {
+  console.log(data.value);
+  axios
+    .post("/login", data.value)
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => console.log(error));
+};
 </script>
 <template>
-  <form class="login-form">
+  <pre>{{ data }}</pre>
+  <form @submit.prevent="submit" class="login-form">
     <label for="username">Enter Email </label>
-    <input type="email" id="username" placeholder="Email" />
+    <input
+      v-model="data.email"
+      type="email"
+      id="username"
+      placeholder="Email"
+    />
 
     <label for="password">Enter Password</label>
     <input
+      v-model="data.password"
       type="password"
       id="password"
       placeholder="Password"

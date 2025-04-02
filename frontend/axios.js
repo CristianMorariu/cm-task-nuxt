@@ -1,14 +1,12 @@
 import axios from "axios";
-// import { useAuthStore } from "./stores/authStore";
-// import { useInstitutionStore } from "./stores/institutionStore";
-// import router from "./router";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 axios.interceptors.request.use(
   function (config) {
     // Do something before request is sent
+    // config.headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
     return config;
   },
   function (error) {
@@ -22,7 +20,11 @@ axios.interceptors.response.use(
     return response;
   },
   function (error) {
-    return Promise.reject(error);
+    if (error.response && error.response.status === 401) {
+      // router.push({name:'Login'});
+    }
+    // return Promise.reject(error);
+    throw error;
   }
 );
 export default axios;

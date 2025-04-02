@@ -1,5 +1,5 @@
 <script setup>
-import axios from "axios";
+import axios from "@/axios";
 
 const addTaskModal = ref(false);
 const taskName = ref(null);
@@ -10,7 +10,7 @@ const date = ref();
 
 const fetchTasks = () => {
   axios
-    .get("http://localhost:8002/api/tasks")
+    .get("/tasks")
     .then((response) => {
       date.value = response.data.date;
       currentDate.value = new Date(date.value.currentDate);
@@ -23,7 +23,7 @@ const fetchTasks = () => {
 };
 const createTask = () => {
   axios
-    .post("http://localhost:8002/api/tasks", { name: taskName.value })
+    .post("/tasks", { name: taskName.value })
     .then((response) => {
       fetchTasks();
       addTaskModal.value = false;
@@ -56,7 +56,7 @@ const toggleTask = (day, taskId, entries) => {
     newEntry.is_completed = 1;
   }
   axios
-    .post("http://localhost:8002/api/task-entry", newEntry)
+    .post("/task-entry", newEntry)
     .then((response) => {
       fetchTasks();
     })

@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use Carbon\Carbon;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,8 +20,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Carbon::setLocale(config('app.locale'));
-        setlocale(LC_TIME, config('app.localeWithRegion'));
-        // Carbon::parse($this->created_at)->translatedFormat('d F, Y');
+        ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
+            return config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
+        });
     }
 }

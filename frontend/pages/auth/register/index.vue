@@ -1,18 +1,53 @@
 <script setup>
+import axios from "@/axios";
+
 definePageMeta({
   layout: "auth-layout",
 });
+
+const data = ref({
+  name: "",
+  email: "",
+  password: "",
+  password_confirmation: "",
+});
+
+const submit = () => {
+  console.log(data.value);
+  axios
+    .post("/register", data.value)
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => console.log(error));
+};
 </script>
 <template>
-  <form class="login-form">
+  <!-- <pre>{{ data }}</pre> -->
+  <form @submit.prevent="submit" class="login-form">
+    <label for="name">Enter Name </label>
+    <input v-model="data.name" type="text" id="name" placeholder="Name" />
     <label for="username">Enter Email </label>
-    <input type="email" id="username" placeholder="Email" />
-
+    <input
+      v-model="data.email"
+      type="email"
+      id="username"
+      placeholder="Email"
+    />
     <label for="password">Enter Password</label>
     <input
+      v-model="data.password"
       type="password"
       id="password"
       placeholder="Password"
+      autocomplete="off"
+    />
+    <label for="passwordConfirmation">Repeat Password</label>
+    <input
+      v-model="data.password_confirmation"
+      type="password"
+      id="passwordConfirmation"
+      placeholder="Repeat Password"
       autocomplete="off"
     />
 
@@ -48,8 +83,7 @@ label {
   color: #555;
 }
 
-input[type="email"],
-input[type="password"] {
+input {
   width: 100%;
   padding: 12px;
   margin-bottom: 15px;
@@ -61,8 +95,7 @@ input[type="password"] {
   transition: border 0.3s;
 }
 
-input[type="email"]:focus,
-input[type="password"]:focus {
+input:focus {
   border-color: #ffbf00;
 }
 
