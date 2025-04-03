@@ -15,15 +15,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api(prepend: [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-        ]);
+        // $middleware->api(prepend: [
+        //     \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        // ]);
 
-        $middleware->alias([
-            'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
-        ]);
+        // $middleware->alias([
+        //     'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+        // ]);
 
-        $middleware ->prepend(AlwaysAcceptJson::class);
+        // $middleware ->prepend(AlwaysAcceptJson::class);
+        $middleware->statefulApi(); 
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->renderable(function(NotFoundHttpException $e, Request $request){

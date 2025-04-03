@@ -1,23 +1,37 @@
 <script setup>
 import axios from "@/axios";
 
+const router = useRouter();
 definePageMeta({
   layout: "auth-layout",
 });
 
 const data = ref({
-  email: "",
-  password: "",
+  email: "cristian@gmail.com",
+  password: "Password",
 });
 
-const submit = () => {
+const submit = async () => {
   console.log(data.value);
-  axios
-    .post("/login", data.value)
+  await axios
+    .get("http://localhost:8002/sanctum/csrf-cookie")
     .then((response) => {
       console.log(response);
+      axios
+        .post("/login", data.value)
+        .then((response) => {
+          router.push({ name: "task-tracker" });
+        })
+        .catch((error) => console.log(error));
     })
     .catch((error) => console.log(error));
+
+  // axios
+  //   .post("/login", data.value)
+  //   .then((response) => {
+  //     console.log(response);
+  //   })
+  //   .catch((error) => console.log(error));
 };
 </script>
 <template>

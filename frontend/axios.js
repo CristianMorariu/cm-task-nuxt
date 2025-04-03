@@ -1,7 +1,8 @@
 import axios from "axios";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
-// axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true;
+axios.defaults.withXSRFToken = true;
 
 axios.interceptors.request.use(
   function (config) {
