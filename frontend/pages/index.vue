@@ -1,8 +1,8 @@
 <script setup>
 //https://memento-mori-calendar.netlify.app/
 // https://memento-mori-calendar.vercel.app/
-const dataNastere = ref("2000-01-21");
-// const dataNastere = ref("2000-10-08");
+// const dataNastere = ref("2000-01-21");
+const dataNastere = ref("2000-10-08");
 const now = new Date();
 const nrOfDecades = 8;
 const decadesLived = ref(0);

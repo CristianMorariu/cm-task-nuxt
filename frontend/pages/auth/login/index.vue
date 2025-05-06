@@ -20,6 +20,7 @@ const submit = async () => {
       axios
         .post("/login", data.value)
         .then((response) => {
+          console.log(response);
           router.push({ name: "task-tracker" });
         })
         .catch((error) => console.log(error));
