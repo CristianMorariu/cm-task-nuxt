@@ -18,12 +18,12 @@ class TaskFactory extends Factory
      */
     public function definition(): array
     {
-      $projectId = Project::inRandomOrder()->value('id') ?? Project::factory();
+        $projectId = Project::inRandomOrder()->value('id') ?? Project::factory();
         $userId    = User::inRandomOrder()->value('id') ?? User::factory();
 
         return [
             'project_id'   => $projectId,
-            'user_id'      => $userId, // simplu: asignee = un user existent
+            'user_id'      => $userId,
             'name'         => $this->faker->sentence(4),
             'description'  => $this->faker->optional()->realText(200),
             'status'       => $this->faker->randomElement(['todo','doing','done']),

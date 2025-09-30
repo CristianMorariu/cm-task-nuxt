@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "cm_task",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

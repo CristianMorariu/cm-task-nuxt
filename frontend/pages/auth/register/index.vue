@@ -12,6 +12,15 @@ const data = ref({
   password_confirmation: "",
 });
 
+onMounted(() => {
+  axios
+    .get("/projects")
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => console.log(error));
+});
+
 const submit = () => {
   console.log(data.value);
   axios

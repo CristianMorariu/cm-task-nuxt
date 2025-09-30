@@ -4,6 +4,8 @@ axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 
+console.log(axios.defaults.baseURL);
+
 axios.interceptors.request.use(
   function (config) {
     // Do something before request is sent
