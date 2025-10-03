@@ -5,12 +5,13 @@ definePageMeta({
   layout: "auth-layout",
 });
 
-const data = ref({
-  name: "",
-  email: "",
-  password: "",
-  password_confirmation: "",
+const form = reactive({
+  name: "Admin",
+  email: "admin@gmail.com",
+  password: "Password",
+  password_confirmation: "Password",
 });
+const errors = ref({});
 
 onMounted(() => {
   axios
@@ -21,39 +22,53 @@ onMounted(() => {
     .catch((error) => console.log(error));
 });
 
-const submit = () => {
-  console.log(data.value);
-  axios
-    .post("/register", data.value)
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => console.log(error));
-};
+async function handleSubmit() {
+  // console.log(form);
+  try {
+    const response = await axios.post("/register", form);
+    console.log(response);
+    localStorage.setItem("access_token", response.data.token);
+    router.push({ name: "task-tracker" });
+  } catch (error) {
+    // console.log("Network error: " + error);
+    console.log(error);
+    errors.value = error.response.data.errors;
+  } finally {
+    // form.password = "";
+    // form.password_confirmation = "";
+  }
+}
 </script>
 <template>
   <!-- <pre>{{ data }}</pre> -->
-  <form @submit.prevent="submit" class="login-form">
+  <form @submit.prevent="handleSubmit" class="login-form">
     <label for="name">Enter Name </label>
-    <input v-model="data.name" type="text" id="name" placeholder="Name" />
+    <input v-model="form.name" type="text" id="name" placeholder="Name" />
+    <div v-if="errors.name" style="color: orangered">{{ errors.name[0] }}</div>
     <label for="username">Enter Email </label>
     <input
-      v-model="data.email"
+      v-model="form.email"
       type="email"
       id="username"
       placeholder="Email"
     />
+    <div v-if="errors.email" style="color: orangered">
+      {{ errors.email[0] }}
+    </div>
     <label for="password">Enter Password</label>
     <input
-      v-model="data.password"
+      v-model="form.password"
       type="password"
       id="password"
       placeholder="Password"
       autocomplete="off"
     />
+    <div v-if="errors.password" style="color: orangered">
+      {{ errors.password[0] }}
+    </div>
     <label for="passwordConfirmation">Repeat Password</label>
     <input
-      v-model="data.password_confirmation"
+      v-model="form.password_confirmation"
       type="password"
       id="passwordConfirmation"
       placeholder="Repeat Password"

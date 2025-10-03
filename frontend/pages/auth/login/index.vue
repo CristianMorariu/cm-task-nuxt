@@ -6,49 +6,44 @@ definePageMeta({
   layout: "auth-layout",
 });
 
-const data = ref({
-  email: "cristian@gmail.com",
+const form = reactive({
+  email: "admin@gmail.com",
   password: "Password",
 });
+const errors = ref({});
 
-const submit = async () => {
-  console.log(data.value);
-  await axios
-    .get("http://localhost:8002/sanctum/csrf-cookie")
-    .then((response) => {
-      console.log(response);
-      axios
-        .post("/login", data.value)
-        .then((response) => {
-          console.log(response);
-          router.push({ name: "task-tracker" });
-        })
-        .catch((error) => console.log(error));
-    })
-    .catch((error) => console.log(error));
-
-  // axios
-  //   .post("/login", data.value)
-  //   .then((response) => {
-  //     console.log(response);
-  //   })
-  //   .catch((error) => console.log(error));
-};
+async function handleSubmit() {
+  console.log(form);
+  try {
+    const response = await axios.post("/login", form);
+    console.log(response);
+    localStorage.setItem("access_token", response.data.token);
+    router.push({ name: "task-tracker" });
+  } catch (error) {
+    // console.log("Network error: " + error);
+    console.log(error);
+    errors.value = error.response.data.errors;
+  } finally {
+    // form.password = "";
+    // form.password_confirmation = "";
+  }
+}
 </script>
 <template>
-  <pre>{{ data }}</pre>
-  <form @submit.prevent="submit" class="login-form">
+  <form @submit.prevent="handleSubmit" class="login-form">
     <label for="username">Enter Email </label>
     <input
-      v-model="data.email"
+      v-model="form.email"
       type="email"
       id="username"
       placeholder="Email"
     />
-
+    <div v-if="errors.email" style="color: orangered">
+      {{ errors.email[0] }}
+    </div>
     <label for="password">Enter Password</label>
     <input
-      v-model="data.password"
+      v-model="form.password"
       type="password"
       id="password"
       placeholder="Password"
