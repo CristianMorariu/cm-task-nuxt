@@ -55,7 +55,7 @@ const isEnabled = (decade, week) => {
   </div>
   <p class="text-gray-600 mt-2 text-center">
     Mai sunt
-    <pre>{{ leftWeeksLived %52 }}</pre>
+    <!--<pre>{{ leftWeeksLived %52 }}</pre>-->
     <span class="font-bold">{{ 52 - ((leftWeeksLived % 52) - 1) }}</span> de
     săptămâni până la ziua ta
   </p>
