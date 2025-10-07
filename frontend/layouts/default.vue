@@ -12,7 +12,7 @@ const sidebarOpen = ref(true);
       <Topbar @toggleSidebar="sidebarOpen = !sidebarOpen" />
       <main class="flex-1 overflow-y-auto p-6 md:p-10 bg-gray-50">
         <!-- <Dashboard /> -->
-        <div class="content mt-2"><slot /></div>
+        <div class="content"><slot /></div>
       </main>
     </div>
   </div>

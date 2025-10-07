@@ -15,7 +15,7 @@ const logout = () => {
     });
 };
 const prop = defineProps(["isOpen"]);
-console.log(prop);
+// console.log(prop);
 </script>
 <template>
   <!-- <div class="flex w-1/6 slim">
@@ -89,75 +89,75 @@ console.log(prop);
   <aside
     :class="[
       'bg-[#212934] h-full slim border-r border-gray-200 flex flex-col justify-between  md:static z-40 transition-all duration-300',
-      prop.isOpen ? 'w-64 ' : 'w-14',
+      prop.isOpen ? 'w-64 ' : 'w-15',
     ]"
   >
     <div class="overflow-hidden">
-      <div class="flex items-center justify-between px-8 py-4">
+      <div class="flex items-center justify-between md:px-8 md:py-3 px-1 py-6">
         <!-- <h1 class="text-xl font-bold text-amber-600" v-if="true"></h1> -->
         <img
           src="@/assets/Logo.png"
           alt="Logo"
           class="w-auto h-auto hidden md:block"
         />
-        <button class="md:hidden text-gray-600" @click="$emit('toggle')">
-          ☰
-        </button>
+        <img
+          src="@/assets/logo_mini.svg"
+          alt="Logo"
+          class="w-auto h-auto block md:hidden"
+        />
       </div>
+      <nav class="">
+        <div class="flex flex-col items-stretch">
+          <NuxtLink
+            :to="{ name: 'index' }"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-md hover_class sidebar-item"
+          >
+            <IconsKeyboardOpen class="w-5 h-5" />
+            <span class="menu-item">Dashboard</span>
+          </NuxtLink>
 
-      <nav class="flex flex-col items-center gap-1">
-        <NuxtLink
-          :to="{ name: 'index' }"
-          class="w-full flex justify-center content-center px-3 py-2 sidebar-item hover_class"
-        >
-          <IconsKeyboardOpen class="w-auto h-auto" />
-          <li class="menu-item">Dashboard</li>
-        </NuxtLink>
-        <NuxtLink
-          :to="{ name: 'task-tracker' }"
-          class="flex items-center sidebar-item hover_class hover:bg-slate-400 rounded"
-        >
-          <IconsUsers class="min-w-10" />
-          <li class="menu-item">Users</li>
-        </NuxtLink>
-        <NuxtLink
-          :to="{ name: 'index' }"
-          class="flex items-center sidebar-item hover_class hover:bg-slate-400 rounded"
-        >
-          <!-- active-class="bg-slate-300" -->
-          <IconsProjects class="min-w-10" />
-          <li class="menu-item">Projects</li>
-        </NuxtLink>
-        <NuxtLink
-          :to="{ name: 'index' }"
-          class="flex items-center sidebar-item hover_class hover:bg-slate-400 rounded"
-        >
-          <IconsTasks class="min-w-10" />
-          <li class="menu-item">My tasks</li>
-        </NuxtLink>
-        <NuxtLink
-          :to="{ name: 'index' }"
-          class="flex items-center sidebar-item hover_class hover:bg-slate-400 rounded"
-        >
-          <IconsProfile class="min-w-10" />
-          <li class="menu-item">Profile</li>
-        </NuxtLink>
-        <NuxtLink
-          :to="{ name: 'index' }"
-          class="flex items-center sidebar-item hover_class hover:bg-slate-400 rounded"
-        >
-          <IconsLogout class="min-w-10" />
-          <li class="menu-item">Logout</li>
-        </NuxtLink>
+          <NuxtLink
+            :to="{ name: 'task-tracker' }"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-md hover_class sidebar-item"
+          >
+            <IconsUsers class="w-5 h-5" />
+            <span class="menu-item">Users</span>
+          </NuxtLink>
+
+          <NuxtLink
+            :to="{ name: 'index' }"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-md hover_class sidebar-item"
+          >
+            <IconsProjects class="w-5 h-5" />
+            <span class="menu-item">Projects</span>
+          </NuxtLink>
+
+          <NuxtLink
+            :to="{ name: 'index' }"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-md hover_class sidebar-item"
+          >
+            <IconsTasks class="w-5 h-5" />
+            <span class="menu-item">My tasks</span>
+          </NuxtLink>
+
+          <NuxtLink
+            :to="{ name: 'index' }"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-md hover_class sidebar-item"
+          >
+            <IconsProfile class="w-5 h-5" />
+            <span class="menu-item">Profile</span>
+          </NuxtLink>
+
+          <NuxtLink
+            :to="{ name: 'index' }"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-md hover_class sidebar-item"
+          >
+            <IconsLogout class="w-5 h-5" />
+            <span class="menu-item">Logout</span>
+          </NuxtLink>
+        </div>
       </nav>
     </div>
-    <!-- 
-    <div class="p-4 border-t border-gray-200">
-      <a href="#" class="flex items-center p-2 hover:text-red-600">
-        <i class="mr-3">🔒</i>
-        <span v-if="isOpen">Logout</span>
-      </a>
-    </div> -->
   </aside>
 </template>
 
@@ -211,6 +211,7 @@ console.log(prop);
     display: block;
     position: absolute;
     left: 65px;
+
     white-space: nowrap;
     background-color: #c5c9cc; /* sau orice culoare dorești */
     padding: 0.5rem;
