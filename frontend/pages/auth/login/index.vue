@@ -5,7 +5,7 @@ const router = useRouter();
 definePageMeta({
   layout: "auth-layout",
 });
-
+const user = useUser();
 const form = reactive({
   email: "admin@gmail.com",
   password: "Password",
@@ -18,6 +18,9 @@ async function handleSubmit() {
     const response = await axios.post("/login", form);
     console.log(response);
     localStorage.setItem("access_token", response.data.token);
+    localStorage.setItem("user", JSON.stringify(response.data.data));
+    user.value = response.data.data;
+    console.log(user.value);
     router.push({ name: "task-tracker" });
   } catch (error) {
     // console.log("Network error: " + error);

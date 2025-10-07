@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\ProjectController;
 
@@ -12,6 +13,10 @@ Route::get('/user', function (Request $request) {
 
 Route::post('register', RegisterController::class);
 Route::post('login', LoginController::class);
+Route::middleware('auth:sanctum')->post('logout', LogoutController::class);
+Route::middleware('auth:sanctum')->get('/active-user', function (Request $r) {
+    return $r->user();
+});
 // Route::middleware('auth:sanctum')->group(function () {
 // });
 Route::apiResource('projects', ProjectController::class);

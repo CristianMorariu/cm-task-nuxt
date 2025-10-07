@@ -1,6 +1,6 @@
 <script setup>
 import axios from "@/axios";
-
+const user = useUser();
 const router = useRouter();
 // console.log(router.getRoutes());
 const logout = () => {
@@ -8,88 +8,35 @@ const logout = () => {
     .post("/logout")
     .then((response) => {
       console.log(response);
+      localStorage.removeItem("access_token");
+      user.value = {
+        id: null,
+        name: null,
+        email: null,
+      };
       router.push({ name: "auth-login" });
     })
     .catch((err) => {
       console.log(err);
+      if (err.response.status === 401) {
+        localStorage.removeItem("access_token");
+        user.value = {
+          id: null,
+          name: null,
+          email: null,
+        };
+        router.push({ name: "auth-login" });
+      }
     });
 };
 const prop = defineProps(["isOpen"]);
 // console.log(prop);
 </script>
 <template>
-  <!-- <div class="flex w-1/6 slim">
-    <div class="p-2 w-full flex flex-col justify-between">
-      <div class="flex flex-col justify-between mb-6">
-        <div class="flex items-center cursor-pointer">
-          <IconsClipBoard />
-          <h3 class="ml-2 font-bold text-lg hidden md:block">
-            {{ true ? "Task Tracker" : "Capacity" }}
-          </h3>
-        </div>
-        <div class="mt-8">
-          <h4 class="font-serif font-thin text-gray-400 mb-2 hidden md:block">
-            GENERAL
-          </h4>
-          <ul class="flex flex-col space-y-2">
-            <NuxtLink
-              :to="{ name: 'index' }"
-              class="flex items-center sidebar-item hover:bg-slate-400 rounded"
-              active-class="bg-slate-300"
-            >
-              <IconsCalendar class="min-w-10" />
-              <li class="menu-item">Calendar</li>
-            </NuxtLink>
-            <NuxtLink
-              :to="{ name: 'pomo-tracker' }"
-              class="flex items-center sidebar-item hover:bg-slate-400 rounded"
-              active-class="bg-slate-300"
-            >
-              <IconsTomato class="min-w-10" />
-              <li class="menu-item">Pomo Tracker</li>
-            </NuxtLink>
-            <NuxtLink
-              :to="{ name: 'task-tracker' }"
-              class="flex items-center sidebar-item hover:bg-slate-400 rounded"
-              active-class="bg-slate-300"
-            >
-              <IconsTaskTracker class="min-w-10" />
-              <li class="menu-item">Task Tracker</li>
-            </NuxtLink>
-            <NuxtLink
-              :to="{ name: 'useful-websites' }"
-              class="flex items-center sidebar-item hover:bg-slate-400 rounded"
-              active-class="bg-slate-300"
-            >
-              <IconsWebsite class="min-w-10" />
-              <li class="menu-item">Useful Website</li>
-            </NuxtLink>
-          </ul>
-        </div>
-      </div>
-
-      <div class="py-3 border-y-2 border-gray-200 max-w-[200px]">
-        <div class="flex gap-4">
-          <img
-            class="h-12 w-12 shrink-0 rounded-lg object-cover"
-            src="https://lh3.googleusercontent.com/a/AGNmyxbSlMgTRzE3_SMIxpDAhpNad-_CN5_tmph1NQ1KhA=s96-c"
-            alt=""
-          />
-          <div class="flex flex-col gap-1">
-            <a href="#" class="font-semibold text-black hover:text-blue-600"
-              >Prajwal Hallale</a
-            >
-
-            <button @click="logout">logOut</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
   <aside
     :class="[
       'bg-[#212934] h-full slim border-r border-gray-200 flex flex-col justify-between  md:static z-40 transition-all duration-300',
-      prop.isOpen ? 'w-64 ' : 'w-15',
+      prop.isOpen ? 'min-w-64 ' : 'min-w-20',
     ]"
   >
     <div class="overflow-hidden">
@@ -110,7 +57,7 @@ const prop = defineProps(["isOpen"]);
         <div class="flex flex-col items-stretch">
           <NuxtLink
             :to="{ name: 'index' }"
-            class="flex items-center gap-2 w-full px-4 py-2 rounded-md hover_class sidebar-item"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
           >
             <IconsKeyboardOpen class="w-5 h-5" />
             <span class="menu-item">Dashboard</span>
@@ -118,7 +65,7 @@ const prop = defineProps(["isOpen"]);
 
           <NuxtLink
             :to="{ name: 'task-tracker' }"
-            class="flex items-center gap-2 w-full px-4 py-2 rounded-md hover_class sidebar-item"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
           >
             <IconsUsers class="w-5 h-5" />
             <span class="menu-item">Users</span>
@@ -126,7 +73,7 @@ const prop = defineProps(["isOpen"]);
 
           <NuxtLink
             :to="{ name: 'index' }"
-            class="flex items-center gap-2 w-full px-4 py-2 rounded-md hover_class sidebar-item"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
           >
             <IconsProjects class="w-5 h-5" />
             <span class="menu-item">Projects</span>
@@ -134,7 +81,7 @@ const prop = defineProps(["isOpen"]);
 
           <NuxtLink
             :to="{ name: 'index' }"
-            class="flex items-center gap-2 w-full px-4 py-2 rounded-md hover_class sidebar-item"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
           >
             <IconsTasks class="w-5 h-5" />
             <span class="menu-item">My tasks</span>
@@ -142,19 +89,19 @@ const prop = defineProps(["isOpen"]);
 
           <NuxtLink
             :to="{ name: 'index' }"
-            class="flex items-center gap-2 w-full px-4 py-2 rounded-md hover_class sidebar-item"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
           >
             <IconsProfile class="w-5 h-5" />
             <span class="menu-item">Profile</span>
           </NuxtLink>
 
-          <NuxtLink
-            :to="{ name: 'index' }"
-            class="flex items-center gap-2 w-full px-4 py-2 rounded-md hover_class sidebar-item"
+          <button
+            @click="logout"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
           >
             <IconsLogout class="w-5 h-5" />
             <span class="menu-item">Logout</span>
-          </NuxtLink>
+          </button>
         </div>
       </nav>
     </div>

@@ -8,8 +8,8 @@ axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 
 axios.interceptors.request.use(
   function (config) {
-    // Do something before request is sent
-    // config.headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
+    const token = localStorage.getItem("access_token");
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
   function (error) {

@@ -3,10 +3,7 @@
   <header
     class="flex items-center justify-between px-4 md:px-8 py-3 bg-white border-b border-gray-200 shadow-sm"
   >
-    <button
-      class="md:hidden text-gray-600 text-xl"
-      @click="$emit('toggleSidebar')"
-    >
+    <button class="text-gray-600 text-xl" @click="$emit('toggleSidebar')">
       ☰
     </button>
 
