@@ -1,31 +1,31 @@
-<script setup>
-import axios from "@/axios";
-
-const router = useRouter();
+<script setup lang="ts">
 definePageMeta({
   layout: "auth-layout",
+  authTitle: "Login",
 });
-const user = useUser();
-const form = reactive({
-  email: "admin@gmail.com",
+
+const auth = useAuth();
+const form: {
+  username: string;
+  password: string;
+} = reactive({
+  username: "admin@gmail.com",
   password: "Password",
 });
-const errors = ref({});
+
+const errors: any = ref({});
 
 async function handleSubmit() {
   console.log(form);
   try {
-    const response = await axios.post("/login", form);
-    console.log(response);
-    localStorage.setItem("access_token", response.data.token);
-    localStorage.setItem("user", JSON.stringify(response.data.data));
-    user.value = response.data.data;
-    console.log(user.value);
-    router.push({ name: "task-tracker" });
-  } catch (error) {
-    // console.log("Network error: " + error);
+    const { $api } = useNuxtApp();
+    const resp = await $api.post("/login", form);
+    await auth.login(resp);
+  } catch (error: any) {
     console.log(error);
-    errors.value = error.response.data.errors;
+    errors.value = error.response.data.errors ?? {
+      message: error.response.data.message,
+    };
   } finally {
     // form.password = "";
     // form.password_confirmation = "";
@@ -34,15 +34,15 @@ async function handleSubmit() {
 </script>
 <template>
   <form @submit.prevent="handleSubmit" class="login-form">
-    <label for="username">Enter Email </label>
+    <label for="username">Enter Email or Username </label>
     <input
-      v-model="form.email"
-      type="email"
+      v-model="form.username"
+      type="username"
       id="username"
       placeholder="Email"
     />
-    <div v-if="errors.email" style="color: orangered">
-      {{ errors.email[0] }}
+    <div v-if="errors.username" style="color: orangered">
+      {{ errors?.username[0] }}
     </div>
     <label for="password">Enter Password</label>
     <input
@@ -52,7 +52,9 @@ async function handleSubmit() {
       placeholder="Password"
       autocomplete="off"
     />
-
+    <div v-if="errors.message" style="color: orangered">
+      {{ errors?.message }}
+    </div>
     <div class="remember-me">
       <input type="checkbox" id="remember" />
       <div for="remember">Keep me logged in</div>
@@ -65,14 +67,14 @@ async function handleSubmit() {
     <NuxtLink to="/auth/register" class="create-account">
       Create account
     </NuxtLink>
-    <div class="recover-password">Recover password</div>
+    <!-- <div class="recover-password">Recover password</div> -->
   </form>
 </template>
 
 <style scoped>
 .login-form {
   display: flex;
-  padding: 50px;
+  padding: 1.7rem 4rem;
   flex-direction: column;
   align-items: center;
 }
@@ -87,7 +89,7 @@ label {
   color: #555;
 }
 
-input[type="email"],
+input[type="username"],
 input[type="password"] {
   width: 100%;
   padding: 12px;
@@ -100,7 +102,7 @@ input[type="password"] {
   transition: border 0.3s;
 }
 
-input[type="email"]:focus,
+input[type="username"]:focus,
 input[type="password"]:focus {
   border-color: #ffbf00;
 }
@@ -109,6 +111,7 @@ input[type="password"]:focus {
 .remember-me {
   display: flex;
   align-items: center;
+  justify-content: center;
   width: 100%;
   margin-bottom: 15px;
 }

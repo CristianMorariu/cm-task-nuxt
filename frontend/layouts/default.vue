@@ -3,11 +3,12 @@ import Topbar from "@/components/Topbar.vue";
 import SideBar from "@/components/SideBar.vue";
 import Dashboard from "@/components/Dashboard.vue";
 
-const user = useUser();
-console.log(user.value);
-watch(user, (val) => {
-  console.log("UPDATE", val);
+const auth = useAuth();
+
+onMounted(() => {
+  auth.hydrateFromStorage();
 });
+
 const sidebarOpen = ref(true);
 </script>
 <template>
@@ -24,10 +25,6 @@ const sidebarOpen = ref(true);
 </template>
 
 <style scoped>
-.bg-color {
-  background-color: #fafafa;
-  /* height: 100vh; */
-}
 .box-shadow {
   box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.07);
 }
