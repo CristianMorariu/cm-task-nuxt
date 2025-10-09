@@ -5,6 +5,9 @@ definePageMeta({
 });
 
 const auth = useAuth();
+const router = useRouter();
+const route = useRoute();
+
 const form: {
   login: string;
   password: string;
@@ -19,7 +22,8 @@ async function handleSubmit() {
   try {
     const { $api } = useNuxtApp();
     const resp = await $api.post("/login", form);
-    await auth.login(resp);
+    auth.login(resp);
+    router.push((route.query.redirect as string) || { name: "index" });
   } catch (error: any) {
     console.log(error);
     errors.value = error.response.data.errors ?? {

@@ -1,9 +1,7 @@
-<script setup>
-import axios from "@/axios";
+<script setup lang="ts">
 const auth = useAuth();
-
+const router = useRouter();
 const prop = defineProps(["isOpen"]);
-// console.log(prop);
 </script>
 <template>
   <aside
@@ -69,7 +67,12 @@ const prop = defineProps(["isOpen"]);
           </NuxtLink>
 
           <button
-            @click="auth.logout"
+            @click="
+              async () => {
+                await auth.logout();
+                router.push({ name: 'auth-login' });
+              }
+            "
             class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
           >
             <IconsLogout class="w-5 h-5" />

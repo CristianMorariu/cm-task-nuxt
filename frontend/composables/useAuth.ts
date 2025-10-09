@@ -3,9 +3,6 @@ import { useUser } from "@/composables/useUser";
 import { useToken } from "@/composables/useToken";
 
 export function useAuth() {
-  const router = useRouter();
-  const route = useRoute();
-
   const user = useUser();
   const token = useToken();
 
@@ -29,7 +26,7 @@ export function useAuth() {
     }
   }
 
-  async function login(response: { data: { data: any; token: string } }) {
+  function login(response: { data: { data: any; token: string } }) {
     const payload = response.data;
     user.value = payload.data; // { id, username, email }
     token.value = payload.token;
@@ -38,8 +35,6 @@ export function useAuth() {
       localStorage.setItem("access_token", payload.token);
       localStorage.setItem("user", JSON.stringify(payload.data));
     }
-
-    await router.push((route.query.redirect as string) || { name: "index" });
   }
 
   async function logout() {
@@ -52,14 +47,13 @@ export function useAuth() {
   }
 
   /* Doar curăță local și redirecționează */
-  async function forceLogout() {
+  function forceLogout() {
     user.value = null;
     token.value = null;
     if (import.meta.client) {
       localStorage.removeItem("access_token");
       localStorage.removeItem("user");
     }
-    await router.push({ name: "auth-login" });
   }
 
   return {

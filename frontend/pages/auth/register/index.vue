@@ -1,17 +1,18 @@
-<script setup>
+<script setup lang="ts">
 definePageMeta({
   layout: "auth-layout",
   authTitle: "Welcome at",
 });
 const auth = useAuth();
-
+const router = useRouter();
+const route = useRoute();
 const form = reactive({
   username: "Admin",
   email: "admin@gmail.com",
   password: "Password",
   password_confirmation: "Password",
 });
-const errors = ref({});
+const errors: any = ref({});
 
 async function handleSubmit() {
   if (form.password !== form.password_confirmation) {
@@ -21,8 +22,9 @@ async function handleSubmit() {
   try {
     const { $api } = useNuxtApp();
     const resp = await $api.post("/register", form);
-    await auth.login(resp);
-  } catch (error) {
+    auth.login(resp);
+    router.push((route.query.redirect as string) || { name: "index" });
+  } catch (error: any) {
     console.log(error);
     errors.value = error.response.data.errors ?? {
       message: error.response.data.message,
