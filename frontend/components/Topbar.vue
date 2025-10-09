@@ -18,7 +18,7 @@ const user = useUser();
         <div
           class="w-8 h-8 bg-cyan-500 rounded-full text-white flex items-center justify-center"
         >
-          {{ user.username[0] }}
+          {{ user?.username[0].toUpperCase() }}
         </div>
       </div>
     </div>

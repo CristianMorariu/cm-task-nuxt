@@ -1,11 +1,10 @@
 <script setup>
-import axios from "@/axios";
-
 definePageMeta({
   layout: "auth-layout",
   authTitle: "Welcome at",
 });
-const router = useRouter();
+const auth = useAuth();
+
 const form = reactive({
   username: "Admin",
   email: "admin@gmail.com",
@@ -14,24 +13,16 @@ const form = reactive({
 });
 const errors = ref({});
 
-onMounted(() => {
-  axios
-    .get("/projects")
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => console.log(error));
-});
-
 async function handleSubmit() {
-  // console.log(form);
+  if (form.password !== form.password_confirmation) {
+    errors.value.message = "Password doesn't match.";
+    return;
+  }
   try {
-    const response = await axios.post("/register", form);
-    console.log(response);
-    localStorage.setItem("access_token", response.data.token);
-    router.push({ username: "task-tracker" });
+    const { $api } = useNuxtApp();
+    const resp = await $api.post("/register", form);
+    await auth.login(resp);
   } catch (error) {
-    // console.log("Network error: " + error);
     console.log(error);
     errors.value = error.response.data.errors ?? {
       message: error.response.data.message,
@@ -43,7 +34,6 @@ async function handleSubmit() {
 }
 </script>
 <template>
-  <!-- <pre>{{ data }}</pre> -->
   <form @submit.prevent="handleSubmit" class="login-form">
     <label for="username">Enter Username </label>
     <input

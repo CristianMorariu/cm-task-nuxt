@@ -15,13 +15,13 @@ class RegisterController extends Controller
     public function __invoke(Request $request)
     {
          $validated = $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
+            'username'     => ['required', 'string', 'max:255','unique:users,username'],
             'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
  
         $user = User::create([
-            'name'     => $validated['name'],
+            'username'     => $validated['username'],
             'email'    => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
@@ -36,7 +36,7 @@ class RegisterController extends Controller
         return response()->json([
             'data'  => [
                 'id'    => $user->id,
-                'name'  => $user->name,
+                'username'  => $user->username,
                 'email' => $user->email,
             ],
             'token' => $token,

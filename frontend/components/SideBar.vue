@@ -1,34 +1,7 @@
 <script setup>
 import axios from "@/axios";
-const user = useUser();
-const router = useRouter();
-// console.log(router.getRoutes());
-const logout = () => {
-  axios
-    .post("/logout")
-    .then((response) => {
-      console.log(response);
-      localStorage.removeItem("access_token");
-      user.value = {
-        id: null,
-        name: null,
-        email: null,
-      };
-      router.push({ name: "auth-login" });
-    })
-    .catch((err) => {
-      console.log(err);
-      if (err.response.status === 401) {
-        localStorage.removeItem("access_token");
-        user.value = {
-          id: null,
-          name: null,
-          email: null,
-        };
-        router.push({ name: "auth-login" });
-      }
-    });
-};
+const auth = useAuth();
+
 const prop = defineProps(["isOpen"]);
 // console.log(prop);
 </script>
@@ -96,7 +69,7 @@ const prop = defineProps(["isOpen"]);
           </NuxtLink>
 
           <button
-            @click="logout"
+            @click="auth.logout"
             class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
           >
             <IconsLogout class="w-5 h-5" />

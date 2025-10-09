@@ -11,27 +11,48 @@ use Symfony\Component\HttpFoundation\Response;
 
 class LoginController extends Controller
 {
-    public function __invoke(Request $request)
+     public function __invoke(Request $request)
     {
-        $credentials = $request->validate([
-            'email'    => ['required','email'],
-            'password' => ['required','string'],
+       
+        $data = $request->validate([
+            'login'    => ['required', 'string'], // email SAU username
+            'password' => ['required', 'string'],
         ]);
 
-        $user = User::where('email', $credentials['email'])->first();
+        $login = $data['login'];
 
-        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+        // determină dacă e email sau username
+        $isEmail = filter_var($login, FILTER_VALIDATE_EMAIL);
+
+        // caută utilizatorul
+        //    - dacă e email, caută pe email
+        //    - altfel, pe username (case-insensitive recomandat)
+        $userQuery = User::query();
+
+        if ($isEmail) {
+            $userQuery->where('email', $login);
+        } else {
+            //căutare case-insensitive la username
+            $userQuery->whereRaw('LOWER(username) = ?', [mb_strtolower($login)]);
+        }
+
+        $user = $userQuery->first();
+
+        //verificare parola
+        if (! $user || ! Hash::check($data['password'], $user->password)) {
             return response()->json(['message' => 'Invalid credentials.'], Response::HTTP_UNAUTHORIZED);
         }
 
+        //token Sanctum
         $device = substr($request->userAgent() ?? 'api', 0, 255);
-        $token = $user->createToken($device)->plainTextToken;
+        $token  = $user->createToken($device)->plainTextToken;
 
+        // 6rspuns
         return response()->json([
-            'data'  => [
-                'id'    => $user->id,
-                'name'  => $user->name,
-                'email' => $user->email,
+            'data' => [
+                'id'       => $user->id,
+                'username' => $user->username,
+                'email'    => $user->email,
             ],
             'token' => $token,
         ]);

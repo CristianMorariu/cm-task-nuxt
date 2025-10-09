@@ -1,0 +1,25 @@
+meta {
+  name: Register
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{domain}}/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "Admin",
+    "email": "admin@gmail.com",
+    "password": "Password",
+    "password_confirmation": "Password"
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+}

@@ -6,17 +6,16 @@ definePageMeta({
 
 const auth = useAuth();
 const form: {
-  username: string;
+  login: string;
   password: string;
 } = reactive({
-  username: "admin@gmail.com",
+  login: "admin@gmail.com",
   password: "Password",
 });
 
 const errors: any = ref({});
 
 async function handleSubmit() {
-  console.log(form);
   try {
     const { $api } = useNuxtApp();
     const resp = await $api.post("/login", form);
@@ -34,15 +33,10 @@ async function handleSubmit() {
 </script>
 <template>
   <form @submit.prevent="handleSubmit" class="login-form">
-    <label for="username">Enter Email or Username </label>
-    <input
-      v-model="form.username"
-      type="username"
-      id="username"
-      placeholder="Email"
-    />
-    <div v-if="errors.username" style="color: orangered">
-      {{ errors?.username[0] }}
+    <label for="login">Enter Email or Username </label>
+    <input v-model="form.login" type="login" id="login" placeholder="Email" />
+    <div v-if="errors.login" style="color: orangered">
+      {{ errors?.login[0] }}
     </div>
     <label for="password">Enter Password</label>
     <input
@@ -89,7 +83,7 @@ label {
   color: #555;
 }
 
-input[type="username"],
+input[type="login"],
 input[type="password"] {
   width: 100%;
   padding: 12px;
@@ -102,7 +96,7 @@ input[type="password"] {
   transition: border 0.3s;
 }
 
-input[type="username"]:focus,
+input[type="login"]:focus,
 input[type="password"]:focus {
   border-color: #ffbf00;
 }

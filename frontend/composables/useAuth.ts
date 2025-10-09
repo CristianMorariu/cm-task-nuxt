@@ -1,6 +1,5 @@
-// composables/useAuth.ts
 import axios from "@/axios";
-import { useUser } from "~/composables/useUser";
+import { useUser } from "@/composables/useUser";
 import { useToken } from "@/composables/useToken";
 
 export function useAuth() {
@@ -14,7 +13,7 @@ export function useAuth() {
     Boolean(user.value?.id && token.value)
   );
 
-  /** Apelezi asta imediat după ce pornește aplicația (ex: în layout) */
+  /* Apelezi asta imediat după ce pornește aplicația (ex: în layout) */
   function hydrateFromStorage() {
     if (import.meta.client) {
       const t = localStorage.getItem("access_token");
@@ -52,7 +51,7 @@ export function useAuth() {
     }
   }
 
-  /** Doar curăță local și redirecționează */
+  /* Doar curăță local și redirecționează */
   async function forceLogout() {
     user.value = null;
     token.value = null;
@@ -60,7 +59,7 @@ export function useAuth() {
       localStorage.removeItem("access_token");
       localStorage.removeItem("user");
     }
-    await router.push({ name: "login" });
+    await router.push({ name: "auth-login" });
   }
 
   return {
