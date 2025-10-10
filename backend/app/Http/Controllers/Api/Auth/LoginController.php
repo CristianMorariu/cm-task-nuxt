@@ -47,7 +47,6 @@ class LoginController extends Controller
         $device = substr($request->userAgent() ?? 'api', 0, 255);
         $token  = $user->createToken($device)->plainTextToken;
 
-        // 6rspuns
         return response()->json([
             'data' => [
                 'id'       => $user->id,

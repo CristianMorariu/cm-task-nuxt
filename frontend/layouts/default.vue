@@ -3,12 +3,6 @@ import Topbar from "@/components/Topbar.vue";
 import SideBar from "@/components/SideBar.vue";
 import Dashboard from "@/components/Dashboard.vue";
 
-const auth = useAuth();
-
-onMounted(() => {
-  auth.hydrateFromStorage();
-});
-
 const sidebarOpen = ref(true);
 </script>
 <template>

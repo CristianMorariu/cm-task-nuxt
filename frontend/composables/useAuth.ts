@@ -6,6 +6,7 @@ export function useAuth() {
   const user = useUser();
   const token = useToken();
 
+  console.log(user.value?.id);
   const isAuthenticated = computed(() =>
     Boolean(user.value?.id && token.value)
   );
@@ -15,6 +16,7 @@ export function useAuth() {
     if (import.meta.client) {
       const t = localStorage.getItem("access_token");
       const u = localStorage.getItem("user");
+      console.log(u);
       if (t) token.value = t;
       if (u) {
         try {

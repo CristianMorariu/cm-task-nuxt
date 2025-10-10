@@ -14,8 +14,8 @@ Route::get('/user', function (Request $request) {
 Route::post('register', RegisterController::class);
 Route::post('login', LoginController::class);
 Route::middleware('auth:sanctum')->post('logout', LogoutController::class);
-Route::middleware('auth:sanctum')->get('/active-user', function (Request $r) {
-    return $r->user();
+Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
+    return response()->json(['data' => $request->user()]);
 });
 // Route::middleware('auth:sanctum')->group(function () {
 // });

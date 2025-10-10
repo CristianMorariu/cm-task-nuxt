@@ -4,6 +4,7 @@ export default defineNuxtRouteMiddleware((to) => {
   // whitelist pentru rute publice
   const publicNames = new Set(["auth-login", "auth-register"]);
 
+  console.log(isAuthenticated.value);
   if (!isAuthenticated.value && !publicNames.has(String(to.name))) {
     return navigateTo({ name: "auth-login", query: { redirect: to.fullPath } });
   }
