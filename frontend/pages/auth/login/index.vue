@@ -11,9 +11,11 @@ const route = useRoute();
 const form: {
   login: string;
   password: string;
+  remember: boolean;
 } = reactive({
   login: "admin@gmail.com",
   password: "Password",
+  remember: false,
 });
 
 const errors: any = ref({});
@@ -21,7 +23,9 @@ const errors: any = ref({});
 async function handleSubmit() {
   try {
     const { $api } = useNuxtApp();
+    await $api.get("/sanctum/csrf-cookie");
     const resp = await $api.post("/login", form);
+    console.log(resp);
     auth.login(resp);
     router.push((route.query.redirect as string) || { name: "index" });
   } catch (error: any) {
@@ -50,12 +54,12 @@ async function handleSubmit() {
       placeholder="Password"
       autocomplete="off"
     />
-    <div v-if="errors.message" style="color: orangered">
-      {{ errors?.message }}
-    </div>
     <div class="remember-me">
-      <input type="checkbox" id="remember" />
+      <input type="checkbox" id="remember" v-model="form.remember" />
       <div for="remember">Keep me logged in</div>
+    </div>
+    <div v-if="errors.message" style="color: orangered" class="mb-2">
+      {{ errors?.message }}
     </div>
 
     <button class="login-btn">LOG IN</button>

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -13,47 +13,37 @@ class LoginController extends Controller
 {
      public function __invoke(Request $request)
     {
-       
+
+        if (Auth::check()) {
+        return response()->json(['already' => true], 200);
+    }
+    
         $data = $request->validate([
-            'login'    => ['required', 'string'], // email SAU username
-            'password' => ['required', 'string'],
+            'login'    => ['required','string'], // email SAU username
+            'password' => ['required','string'],
         ]);
 
         $login = $data['login'];
-
-        // determină dacă e email sau username
         $isEmail = filter_var($login, FILTER_VALIDATE_EMAIL);
 
-        // caută utilizatorul
-        //    - dacă e email, caută pe email
-        //    - altfel, pe username (case-insensitive recomandat)
-        $userQuery = User::query();
+        $credentials = [
+            $isEmail ? 'email' : 'username' => $login,
+            'password' => $data['password'],
+        ];
 
-        if ($isEmail) {
-            $userQuery->where('email', $login);
-        } else {
-            //căutare case-insensitive la username
-            $userQuery->whereRaw('LOWER(username) = ?', [mb_strtolower($login)]);
+        if (! Auth::attempt($credentials, true)) {
+            return response()->json(['message' => 'Invalid credentials'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $user = $userQuery->first();
+        // setează cookie de sesiune + protecție fixation
+        $request->session()->regenerate();
 
-        //verificare parola
-        if (! $user || ! Hash::check($data['password'], $user->password)) {
-            return response()->json(['message' => 'Invalid credentials.'], Response::HTTP_UNAUTHORIZED);
-        }
-
-        //token Sanctum
-        $device = substr($request->userAgent() ?? 'api', 0, 255);
-        $token  = $user->createToken($device)->plainTextToken;
+        $user = Auth::user();
 
         return response()->json([
-            'data' => [
-                'id'       => $user->id,
-                'username' => $user->username,
-                'email'    => $user->email,
-            ],
-            'token' => $token,
+        'id' => Auth::id(),
+        'username' => Auth::user()->username,
+        'email' => Auth::user()->email,
         ]);
     }
 }

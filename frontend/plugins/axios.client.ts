@@ -4,12 +4,18 @@ import type { AxiosInstance } from "axios";
 export default defineNuxtPlugin(() => {
   const api: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
-    withCredentials: false, // Bearer only
+    withCredentials: true,
+    xsrfCookieName: "XSRF-TOKEN",
+    xsrfHeaderName: "X-XSRF-TOKEN",
   });
 
   api.interceptors.request.use((config) => {
-    const token = useToken().value;
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+    if (import.meta.client) {
+      const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+      if (match) {
+        config.headers["X-XSRF-TOKEN"] = decodeURIComponent(match[1]);
+      }
+    }
     return config;
   });
 
