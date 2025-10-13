@@ -43,7 +43,7 @@ const prop = defineProps(["isOpen"]);
           </NuxtLink>
 
           <NuxtLink
-            :to="{ name: 'task-tracker' }"
+            :to="{ name: 'projects' }"
             class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
           >
             <IconsProjects class="w-5 h-5" />
@@ -51,7 +51,7 @@ const prop = defineProps(["isOpen"]);
           </NuxtLink>
 
           <NuxtLink
-            :to="{ name: 'index' }"
+            ::to="{ name: 'task-tracker' }"
             class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
           >
             <IconsTasks class="w-5 h-5" />
@@ -59,7 +59,7 @@ const prop = defineProps(["isOpen"]);
           </NuxtLink>
 
           <NuxtLink
-            :to="{ name: 'index' }"
+            :to="{ name: 'task-tracker' }"
             class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
           >
             <IconsProfile class="w-5 h-5" />
