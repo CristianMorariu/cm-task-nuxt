@@ -1,10 +1,10 @@
 <script setup>
 import { computed, useSlots } from "vue";
-import { useDisplay } from "vuetify/lib/framework.mjs";
-import OptionsDots from "../Icons/OptionsDots.vue";
+// import { useDisplay } from "vuetify/lib/framework.mjs";
+// import OptionsDots from "../Icons/OptionsDots.vue";
 
 const slots = useSlots();
-const { smAndDown } = useDisplay();
+// const { smAndDown } = useDisplay();
 const emit = defineEmits(["row-click"]);
 const props = defineProps({
   data: { type: Array, required: true },
@@ -59,12 +59,8 @@ const columnCount = computed(() => {
 
           <!-- actiuni daca trimit props.actions -->
           <td class="px-4 py-2 text-center" v-if="props.actions" @click.stop>
-            <v-menu
-              v-if="smAndDown"
-              offset-y
-              close-on-content-click
-              scroll-strategy="close"
-            >
+            <!-- v-if="smAndDown" -->
+            <!-- <v-menu offset-y close-on-content-click scroll-strategy="close">
               <template #activator="{ props }">
                 <button v-bind="props" aria-label="Actions">
                   <v-icon size="auto"><OptionsDots /></v-icon>
@@ -83,8 +79,8 @@ const columnCount = computed(() => {
                   </div>
                 </div>
               </div>
-            </v-menu>
-            <div v-else class="flex gap-3 justify-center">
+            </v-menu> -->
+            <!-- <div v-else class="flex gap-3 justify-center">
               <div v-for="action in props.actions" :key="action.name">
                 <v-tooltip
                   :text="action.label"
@@ -106,7 +102,7 @@ const columnCount = computed(() => {
                   </template>
                 </v-tooltip>
               </div>
-            </div>
+            </div> -->
           </td>
         </tr>
 

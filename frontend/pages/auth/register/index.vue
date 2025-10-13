@@ -23,7 +23,7 @@ async function handleSubmit() {
     const { $api } = useNuxtApp();
     await $api.get("/sanctum/csrf-cookie");
     const resp = await $api.post("/register", form);
-    auth.setUser(resp.data);
+    auth.setUser(resp as any);
     router.push((route.query.redirect as string) || { name: "index" });
   } catch (error: any) {
     console.log(error);

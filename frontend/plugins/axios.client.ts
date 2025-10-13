@@ -19,7 +19,7 @@ export default defineNuxtPlugin(() => {
     return config;
   });
   api.interceptors.response.use(
-    (r) => r,
+    (r) => r.data,
     async (err) => {
       if (err?.response?.status === 401) {
         const { clearUser } = useAuth();

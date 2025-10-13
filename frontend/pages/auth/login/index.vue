@@ -27,7 +27,7 @@ async function handleSubmit() {
     await $api.get("/sanctum/csrf-cookie");
     const resp = await $api.post("/login", form);
     console.log(resp);
-    auth.setUser(resp.data);
+    auth.setUser(resp as any);
     router.push((route.query.redirect as string) || { name: "index" });
   } catch (error: any) {
     console.log(error);
