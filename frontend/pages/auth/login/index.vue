@@ -21,12 +21,13 @@ const form: {
 const errors: any = ref({});
 
 async function handleSubmit() {
+  console.log(form);
   try {
     const { $api } = useNuxtApp();
     await $api.get("/sanctum/csrf-cookie");
     const resp = await $api.post("/login", form);
     console.log(resp);
-    auth.login(resp);
+    auth.setUser(resp.data);
     router.push((route.query.redirect as string) || { name: "index" });
   } catch (error: any) {
     console.log(error);

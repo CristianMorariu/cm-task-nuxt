@@ -1,11 +1,24 @@
-export default defineNuxtRouteMiddleware((to) => {
-  const { isAuthenticated } = useAuth();
-
-  // whitelist pentru rute publice
+export default defineNuxtRouteMiddleware(async (to) => {
   const publicNames = new Set(["auth-login", "auth-register"]);
 
-  console.log(isAuthenticated.value);
-  if (!isAuthenticated.value && !publicNames.has(String(to.name))) {
-    return navigateTo({ name: "auth-login", query: { redirect: to.fullPath } });
+  const { tried, ensureUser, isAuthenticated } = useAuth();
+
+  if (!tried.value) {
+    await ensureUser();
+  }
+
+  if (publicNames.has(String(to.name))) {
+    if (isAuthenticated.value) {
+      return navigateTo({ name: "index" }, { replace: true });
+    }
+    return;
+  }
+
+  // 3) Dacă e rută protejată:
+  if (!isAuthenticated.value) {
+    return navigateTo(
+      { name: "auth-login", query: { redirect: to.fullPath } },
+      { replace: true }
+    );
   }
 });

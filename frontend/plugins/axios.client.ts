@@ -18,7 +18,17 @@ export default defineNuxtPlugin(() => {
     }
     return config;
   });
-
+  api.interceptors.response.use(
+    (r) => r,
+    async (err) => {
+      if (err?.response?.status === 401) {
+        const { clearUser } = useAuth();
+        clearUser();
+        await navigateTo({ name: "auth-login" });
+      }
+      return Promise.reject(err);
+    }
+  );
   return {
     provide: { api }, // folosit cu const { $api } = useNuxtApp()
   };

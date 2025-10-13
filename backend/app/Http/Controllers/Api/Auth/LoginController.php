@@ -21,6 +21,7 @@ class LoginController extends Controller
         $data = $request->validate([
             'login'    => ['required','string'], // email SAU username
             'password' => ['required','string'],
+            'remember' =>['boolean']
         ]);
 
         $login = $data['login'];
@@ -31,7 +32,8 @@ class LoginController extends Controller
             'password' => $data['password'],
         ];
 
-        if (! Auth::attempt($credentials, true)) {
+        $remember = $data['remember'] ?? false;
+        if (! Auth::attempt($credentials, $remember)) {
             return response()->json(['message' => 'Invalid credentials'], Response::HTTP_UNAUTHORIZED);
         }
 

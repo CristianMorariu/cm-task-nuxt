@@ -1,5 +1,5 @@
 <script setup>
-const user = useUser();
+const { user } = useAuth();
 </script>
 <template>
   <header

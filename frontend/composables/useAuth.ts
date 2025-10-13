@@ -1,70 +1,59 @@
-import axios from "@/axios";
-import { useUser } from "@/composables/useUser";
-import { useToken } from "@/composables/useToken";
+type AuthUser = { id: number; username: string; email: string };
 
 export function useAuth() {
-  const user = useUser();
-  const token = useToken();
+  const user = useState<AuthUser | null>("auth:user", () => null);
+  const tried = useState<boolean>("auth:tried", () => false); // am încercat /api/me
+  const isAuthenticated = computed(() => Boolean(user.value?.id));
+  const { $api } = useNuxtApp();
 
-  console.log(user.value?.id);
-  const isAuthenticated = computed(() =>
-    Boolean(user.value?.id && token.value)
-  );
+  async function ensureUser() {
+    if (tried.value) return user.value;
 
-  /* Apelezi asta imediat după ce pornește aplicația (ex: în layout) */
-  function hydrateFromStorage() {
-    if (import.meta.client) {
-      const t = localStorage.getItem("access_token");
-      const u = localStorage.getItem("user");
-      console.log(u);
-      if (t) token.value = t;
-      if (u) {
-        try {
-          user.value = JSON.parse(u);
-        } catch {
-          user.value = null;
-        }
-      }
+    const headers = import.meta.server
+      ? useRequestHeaders(["cookie"])
+      : undefined;
+
+    try {
+      const me = await $fetch(`${import.meta.env.VITE_API_BASE_URL}/api/me`, {
+        credentials: "include",
+        headers,
+      });
+      // if (import.meta.server) console.log("[/api/me] server response:", me);
+
+      user.value = (me as any).data ?? me;
+    } catch (err) {
+      // if (import.meta.server) console.error("[/api/me] server error:", err);
+      user.value = null;
+    } finally {
+      tried.value = true;
     }
-  }
-
-  function login(response: { data: { data: any; token: string } }) {
-    const payload = response.data;
-    user.value = payload.data; // { id, username, email }
-    token.value = payload.token;
-
-    if (import.meta.client) {
-      localStorage.setItem("access_token", payload.token);
-      localStorage.setItem("user", JSON.stringify(payload.data));
-    }
+    return user.value;
   }
 
   async function logout() {
     try {
-      await axios.post("/logout", {});
+      await $api.post("/logout", {});
     } catch (_) {
     } finally {
-      forceLogout();
+      clearUser();
     }
   }
-
-  /* Doar curăță local și redirecționează */
-  function forceLogout() {
+  function setUser(u: AuthUser | null) {
+    user.value = u;
+    tried.value = true;
+  }
+  function clearUser() {
     user.value = null;
-    token.value = null;
-    if (import.meta.client) {
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("user");
-    }
+    tried.value = true;
   }
 
   return {
     user,
-    token,
     isAuthenticated,
-    hydrateFromStorage,
-    login,
+    tried,
+    ensureUser,
+    setUser,
     logout,
-    forceLogout,
+    clearUser,
   };
 }

@@ -1,0 +1,15 @@
+meta {
+  name: CSRF
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{domain}}/sanctum/csrf-cookie
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

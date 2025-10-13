@@ -1,10 +1,4 @@
-<script setup>
-const auth = useAuth();
-
-onMounted(() => {
-  auth.hydrateFromStorage();
-});
-</script>
+<script setup></script>
 
 <template>
   <div>
