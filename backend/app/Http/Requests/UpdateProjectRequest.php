@@ -24,8 +24,9 @@ class UpdateProjectRequest extends FormRequest
         return [
             'name'        => ['sometimes','required','string','max:255'],
             'description' => ['sometimes','nullable','string','max:2000'],
-            'color'       => ['sometimes','nullable','regex:/^#([0-9a-fA-F]{6})$/'],
-            'status'      => ['sometimes','in:active,archived'],
+            'supervisor_id' => ['sometimes','nullable','exists:users,id'],
+            'deadline'      => ['sometimes','nullable','date'],
+            'status'        => ['sometimes','in:active,archived'],
         ];
     }
 }

@@ -1,5 +1,6 @@
 <script setup>
 const { user } = useAuth();
+// console.log(user.value);
 </script>
 <template>
   <header

@@ -16,9 +16,14 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('color', 9)->nullable(); 
+            $table->foreignId('supervisor_id')
+            ->nullable()
+            ->constrained('users')
+            ->nullOnDelete();
+            $table->date('deadline')->nullable();
             $table->enum('status', ['active', 'archived'])->default('active');
             $table->timestamps();
+            $table->index(['status', 'deadline']);
         });
     }
 

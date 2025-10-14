@@ -21,10 +21,20 @@ class DatabaseSeeder extends Seeder
     );
 
     // 2. câțiva useri random
-    User::factory()->count(3)->create();
+    User::factory()->count(5)->create();
 
     // 3. proiecte (alegând random useri existenți)
-    Project::factory()->count(5)->create();
+    $owner = User::inRandomOrder()->first();
+    $supervisor = User::where('id', '!=', $owner->id)->inRandomOrder()->first();
+
+    Project::factory()
+        ->count(9)
+        ->active()
+        ->create([
+            'user_id'       => $owner->id,
+            'supervisor_id' => $supervisor?->id,
+            'deadline'      => now()->addMonths(2)->toDateString(),
+        ]);
 
     // 4. tasks random distribuite pe proiecte și useri
     Task::factory()->count(30)->create();

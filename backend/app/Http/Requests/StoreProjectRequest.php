@@ -24,8 +24,9 @@ class StoreProjectRequest extends FormRequest
         return [
             'name'        => ['required','string','max:255'],
             'description' => ['nullable','string','max:2000'],
-            'color'       => ['nullable','regex:/^#([0-9a-fA-F]{6})$/'],
-            'status'      => ['in:active,archived'],
+            'supervisor_id' => ['nullable','exists:users,id'],
+            'deadline'      => ['nullable','date'],
+            'status'        => ['required','in:active,archived'],
         ];
     }
 }

@@ -15,9 +15,10 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        $projects = Project::latest('id')
-            ->withCount('tasks')
-            ->paginate($request->integer('per_page', 10));
+        $projects = Project::query()
+    ->with(['supervisor:id,username,email'])
+    ->withCount('tasks')
+    ->paginate(15);
 
         return ProjectResource::collection($projects);
     }
@@ -38,7 +39,8 @@ class ProjectController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $project = Project::with(['supervisor:id,name,email'])->findOrFail($id);
+        return new ProjectResource($project);
     }
 
     /**

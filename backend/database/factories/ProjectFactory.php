@@ -19,12 +19,17 @@ class ProjectFactory extends Factory
     {
        $userId = User::inRandomOrder()->value('id') ?? User::factory();
 
-        return [
-            'user_id'    => $userId,
-            'name'       => $this->faker->sentence(3),       
-            'description'=> $this->faker->realText(120),
-            'color'      => $this->faker->hexColor(),          
-            'status'     => $this->faker->randomElement(['active','archived']),
-        ];
+      return [
+        'user_id'       => $userId,
+        'name'          => $this->faker->sentence(3),
+        'description'   => $this->faker->realText(120),
+        'supervisor_id' => User::factory(),
+        'deadline'      => $this->faker->optional()->dateTimeBetween('+1 week', '+6 months'), // <-- fără format()
+        'status'        => $this->faker->randomElement(['active', 'archived']),
+    ];
+    }
+    public function active(): self
+    {
+        return $this->state(fn () => ['status' => 'active']);
     }
 }

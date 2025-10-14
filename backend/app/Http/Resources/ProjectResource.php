@@ -15,16 +15,24 @@ class ProjectResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'          => $this->id,
-            'userId'      => $this->user_id,
-            'name'        => $this->name,
-            'description' => $this->description,
-            'color'       => $this->color,
-            'status'      => $this->status,
-            'createdAt'   => $this->created_at?->toISOString(),
-            'updatedAt'   => $this->updated_at?->toISOString(),
-            // ex. dacă folosești withCount('tasks')
-            'tasksCount'  => $this->when(isset($this->tasks_count), $this->tasks_count),
+            'id'           => (int) $this->id,
+            'userId'       => (int) $this->user_id,
+            'name'         => $this->name,
+            'description'  => $this->description,
+            'status'       => $this->status,
+
+            'deadline'     => $this->deadline?->toISOString(),
+            'deadlineFormatted' => $this->deadline
+            ? $this->deadline->timezone('Europe/Bucharest')->format('d.m.Y')
+            : null,
+            'createdAt'    => $this->created_at?->toISOString(),
+            'updatedAt'    => $this->updated_at?->toISOString(),
+
+            'supervisor'   => $this->whenLoaded('supervisor', fn () => new UserTinyResource($this->supervisor)),
+
+            // ex. cu withCount('tasks')
+            'tasksCount'   => $this->when(isset($this->tasks_count), (int) $this->tasks_count),
+
         ];
     }
 }
