@@ -1,0 +1,22 @@
+meta {
+  name: Put
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{domain}}/api/projects/{id}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "GIS Viewer v2",
+    "status": "active"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,11 +1,11 @@
 meta {
-  name: Index
+  name: Delete
   type: http
-  seq: 1
+  seq: 5
 }
 
-get {
-  url: {{domain}}/api/projects
+delete {
+  url: {{domain}}/api/projects/{id}
   body: none
   auth: inherit
 }
