@@ -7,34 +7,38 @@ const users = [
 ];
 
 const form = reactive({
+  userId: null,
   name: "",
-  deadline: "", // 'YYYY-MM-DD'
-  supervisor_id: null as number | null,
   description: "",
+  supervisor_id: null as number | null,
+  deadline: "", // 'YYYY-MM-DD'
+  status: "",
   files: [] as File[],
 });
 
 function reset() {
+  form.userId = null;
   form.name = "";
-  form.deadline = "";
-  form.supervisor_id = null;
   form.description = "";
+  form.supervisor_id = null;
+  form.deadline = "";
+  form.status = "";
   form.files = [];
 }
 
 async function submit() {
   // construiește payload; pentru fișiere, folosește FormData
-  const fd = new FormData();
-  fd.append("name", form.name);
-  if (form.deadline) fd.append("deadline", form.deadline);
-  if (form.supervisor_id)
-    fd.append("supervisor_id", String(form.supervisor_id));
-  if (form.description) fd.append("description", form.description);
-  form.files.forEach((f, i) => fd.append(`files[${i}]`, f));
+  // const fd = new FormData();
+  // fd.append("name", form.name);
+  // if (form.deadline) fd.append("deadline", form.deadline);
+  // if (form.supervisor_id)
+  //   fd.append("supervisor_id", String(form.supervisor_id));
+  // if (form.description) fd.append("description", form.description);
+  // form.files.forEach((f, i) => fd.append(`files[${i}]`, f));
 
-  // exemplu: trimite cu $fetch sau axios
-  // await $fetch('/api/projects', { method: 'POST', body: fd })
-  console.log("submit ->", Object.fromEntries(fd as any));
+  // console.log("submit ->", Object.fromEntries(fd as any));
+
+  console.log(form);
 }
 </script>
 

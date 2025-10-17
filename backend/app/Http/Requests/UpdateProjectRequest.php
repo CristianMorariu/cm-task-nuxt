@@ -22,8 +22,9 @@ class UpdateProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'        => ['sometimes','required','string','max:255'],
-            'description' => ['sometimes','nullable','string','max:2000'],
+            'user_id'       => ['sometimes','exists:users,id'],
+            'name'          => ['sometimes','string','max:255'],
+            'description'   => ['sometimes','nullable','string'],
             'supervisor_id' => ['sometimes','nullable','exists:users,id'],
             'deadline'      => ['sometimes','nullable','date'],
             'status'        => ['sometimes','in:active,archived'],
