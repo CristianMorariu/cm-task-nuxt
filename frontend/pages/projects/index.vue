@@ -93,7 +93,7 @@ onMounted(async () => {
               class="h-8 w-8 rounded-full object-cover"
             />
             <span class="text-slate-700 font-medium">{{
-              project.supervisor.username
+              project?.supervisor?.username
             }}</span>
           </div>
 

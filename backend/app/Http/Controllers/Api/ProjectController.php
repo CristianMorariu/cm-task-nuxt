@@ -29,7 +29,12 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request)
     {
-        $project = Project::create($request->validated());
+        $data = $request->validated();
+
+        $project = new Project($data);
+        $project->user_id = $request->user()->id; // <- setat din auth
+        $project->save();
+
         $project->load(['supervisor:id,username,email']);
 
         return (new ProjectResource($project))

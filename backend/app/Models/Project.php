@@ -12,7 +12,7 @@ class Project extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'name', 'description', 'supervisor_id', 'deadline', 'status',
+        'name', 'description', 'supervisor_id', 'deadline', 'status',
     ];
     protected $casts = [
         'deadline'   => 'date',

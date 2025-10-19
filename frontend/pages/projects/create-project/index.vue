@@ -5,19 +5,17 @@ const users = [
   { id: 2, name: "Cody Fisher", avatar: "https://i.pravatar.cc/100?img=8" },
   { id: 3, name: "Wade Warren", avatar: "https://i.pravatar.cc/100?img=12" },
 ];
-
+const { $api } = useNuxtApp();
 const form = reactive({
-  userId: null,
-  name: "",
-  description: "",
+  name: "Test Project",
+  description: "lorem inptur s fvsdgfsd  fsd fsd f sdfsfd",
   supervisor_id: null as number | null,
-  deadline: "", // 'YYYY-MM-DD'
-  status: "",
+  deadline: "2025-10-08", // 'YYYY-MM-DD'
+  status: "active",
   files: [] as File[],
 });
 
 function reset() {
-  form.userId = null;
   form.name = "";
   form.description = "";
   form.supervisor_id = null;
@@ -37,8 +35,14 @@ async function submit() {
   // form.files.forEach((f, i) => fd.append(`files[${i}]`, f));
 
   // console.log("submit ->", Object.fromEntries(fd as any));
-
   console.log(form);
+
+  try {
+    const resp = await $api.post("/api/projects", form);
+    console.log(resp);
+  } catch (error) {
+    console.log(error);
+  }
 }
 </script>
 
