@@ -59,7 +59,12 @@ onMounted(async () => {
               Deadline: {{ project.deadlineFormatted }}
             </div>
             <button
-              @click="openEdit = true"
+              @click="
+                router.push({
+                  name: 'projects-edit-project-id',
+                  params: { id: project.id },
+                })
+              "
               title="Edit"
               class="hover:text-slate-600"
             >
