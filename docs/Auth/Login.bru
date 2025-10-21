@@ -5,23 +5,21 @@ meta {
 }
 
 post {
-  url: {{domain}}/login
+  url: {{domain}}/api/login
   body: json
   auth: inherit
 }
 
 headers {
   X-Requested-With: XMLHttpRequest
-  X-XSRF-TOKEN: eyJpdiI6IjNJQ3ZJL0tSVlZHSFJMcjJYd2tucGc9PSIsInZhbHVlIjoiWVZiUEJTVWo3QTQ1YjBQUGlxNzB4ZkNXaXFPb1M0ZUlHLzRvcmxyUmVoMU02ZjFyUm5KSEtsK2NHU0FNYnUxK2dJNndETXZjTTBpVVh1a3h5cERBWnhkQXQwNStzUVZHc0p0cytTYWtCTVFhWWxPV0JGYnFpR0xvUERtV0Q4aFUiLCJtYWMiOiI0NzAzNmJjNWY2ZDkwMThiM2U4ZWE5Y2Q0YzRiOGQ5ODRiYmVkMTQwOGY5ZTAyNzA3ZmE1ZmM0NDEzNjEyZmQxIiwidGFnIjoiIn0
+  X-XSRF-TOKEN: eyJpdiI6InlMSkNLRmowZVhCTysrcGtUNGhVTEE9PSIsInZhbHVlIjoidHZiYXlPdDhOVSt2eW1Da1h6ay8vVUk4d2tLUThSdGV4b0dYdUErZjg4U0dWb0liU0x5UDNoVndaZ0ZFQjkwL0lEdDFZY1Y1MjRpeHRtL3YzbGdLclNRcDZ3Vm1OcTNhLytwUGczd2lzZXU2eTVmS1NyRXBTUlZpODN1WmN5RjMiLCJtYWMiOiI1MmIyN2Q4N2RhYmY4MDFlMTkxYTIyMDNkMjBkNTY3MGJhNzEwZjNmMjNmNWU4OGM1YWZkYzJjMWU0NjhhMWU1IiwidGFnIjoiIn0
 }
 
 body:json {
-  {
-    "login": "Admin",
-    "password": "Password"
-  }
+  { "login": "admin@gmail.com", "password": "Password" }
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,8 +17,13 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
       User::updateOrCreate(
-        ['email' => 'test@example.com'],
-        ['username' => 'User', 'password' => bcrypt('password')]
+     ['email' => 'admin@gmail.com'],
+            [
+                'username'   => 'admin',
+                'full_name'  => 'Site Administrator',
+                'role'       => \App\Enums\UserRole::Admin,
+                'password'   => Hash::make('Password'),
+            ]
     );
 
     // 2. câțiva useri random

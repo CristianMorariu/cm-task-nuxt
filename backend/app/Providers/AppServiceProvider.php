@@ -9,6 +9,10 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
+    protected $policies = [
+    \App\Models\User::class => \App\Policies\UserPolicy::class,
+];
+    
     public function register(): void
     {
         //
@@ -21,4 +25,5 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
+
 }
