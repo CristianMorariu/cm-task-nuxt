@@ -49,9 +49,9 @@ class User extends Authenticatable
             'role' => UserRole::class,
         ];
     }
-    protected function avatarUrl(): Attribute {
-        return Attribute::get(function () {
-            return $this->avatar ? asset('storage/'.$this->avatar) : null;
-        });
-    }
+    // protected function avatarUrl(): Attribute {
+    //     return Attribute::get(function () {
+    //         return $this->avatar ? asset('storage/'.$this->avatar) : null;
+    //     });
+    // }
 }

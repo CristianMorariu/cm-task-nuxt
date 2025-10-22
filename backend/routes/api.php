@@ -1,10 +1,12 @@
 <?php
 
+use App\Enums\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\UserController;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
 Route::post('/login', function (Request $request) {
@@ -42,6 +44,16 @@ Route::post('/login', function (Request $request) {
     ]);
 });
 
+Route::get('/meta/roles', function () {
+    // cache optional, 1 oră
+    return Cache::remember('meta.roles', 3600, function () {
+        $data = array_map(
+            fn(UserRole $r) => ['key' => $r->value, 'label' => $r->label()],
+            UserRole::cases()
+        );
+        return response()->json(['data' => $data]);
+    });
+});
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('projects', ProjectController::class);
     Route::apiResource('users', UserController::class);
