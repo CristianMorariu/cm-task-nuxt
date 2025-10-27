@@ -1,16 +1,19 @@
 <script setup>
 import UserPlaceholder from "@/assets/userPlaceholder.jpg";
 const file = ref();
-const src = ref();
+const sourceLink = defineProps(["src"]);
+const src = ref(sourceLink.src);
 const avatar = defineModel();
+
+watch(sourceLink, (newSrc) => {
+  src.value = newSrc.src;
+});
+
 function browse() {
-  //   console.log(file);
   file.value.click();
 }
 function change(e) {
-  //   console.log(e.target.files[0]);
   avatar.value = e.target.files[0];
-  //   console.log(avatar.value);
   let reader = new FileReader();
   reader.readAsDataURL(e.target.files[0]);
   reader.onload = (e) => {

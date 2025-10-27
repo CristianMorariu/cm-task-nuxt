@@ -12,6 +12,14 @@ class StoreUserRequest extends FormRequest
      */
    public function authorize(): bool { return $this->user()->can('create', User::class); }
 
+   protected function prepareForValidation(): void
+    {
+        $full = $this->input('fullName', $this->input('full_name'));
+
+        $this->merge([
+            'full_name' => blank($full) ? null : $full, // goale -> null
+        ]);
+    }
     /**
      * Get the validation rules that apply to the request.
      *

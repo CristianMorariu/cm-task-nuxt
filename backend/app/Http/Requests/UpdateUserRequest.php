@@ -13,7 +13,13 @@ class UpdateUserRequest extends FormRequest
         $user = $this->route('user'); // model binding
         return $this->user()->can('update', $user);
     }
-
+    protected function prepareForValidation(): void
+    {
+        if ($this->hasAny(['fullName','full_name'])) {
+            $full = $this->input('fullName', $this->input('full_name'));
+            $this->merge(['full_name' => blank($full) ? null : $full]);
+        }
+    }
     /**
      * Get the validation rules that apply to the request.
      *

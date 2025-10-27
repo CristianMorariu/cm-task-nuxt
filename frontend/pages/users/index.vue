@@ -2,17 +2,9 @@
 const { $api } = useNuxtApp();
 const users = ref(null);
 const router = useRouter();
-
-onMounted(async () => {
-  try {
-    const resp = await $api.get("/api/users");
-    console.log(resp);
-    users.value = resp.data;
-  } catch (error) {
-    console.log(error);
-  }
-});
-
+const toast = useToast();
+const openDelete = ref(false);
+const userToDelete = ref({});
 const roleLabel = (r) =>
   ({ admin: "Administrator", manager: "Manager", user: "Employee" }[r] ?? r);
 
@@ -22,6 +14,37 @@ const roleClass = (r) =>
     manager: "bg-blue-100 text-blue-800 ring-1 ring-blue-200",
     user: "bg-gray-100 text-gray-800 ring-1 ring-gray-200",
   }[r] ?? "bg-gray-100 text-gray-800 ring-1 ring-gray-200");
+
+onMounted(() => {
+  fetchUsers();
+});
+
+async function fetchUsers() {
+  try {
+    const resp = await $api.get("/api/users");
+    console.log(resp);
+    users.value = resp.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+async function deleteUser() {
+  try {
+    const resp = await $api.delete(`/api/users/${userToDelete.value}`);
+    fetchUsers();
+    openDelete.value = false;
+    toast.success({
+      title: "User șters!",
+      message: "User șters cu success.",
+    });
+  } catch (error) {
+    console.log(error);
+    toast.error({
+      title: "Eroare",
+      message: "User șters cu success.",
+    });
+  }
+}
 </script>
 <template>
   <div>
@@ -36,7 +59,6 @@ const roleClass = (r) =>
     </div>
 
     <Table v-if="users" :data="users">
-      <!-- ✅ slot pentru header -->
       <template #thead>
         <th class="px-4 py-2">ID</th>
         <th class="px-4 py-2">Full Name</th>
@@ -46,8 +68,6 @@ const roleClass = (r) =>
         <th class="px-4 py-2">Avatar</th>
         <th class="px-4 py-2"></th>
       </template>
-
-      <!-- ✅ slot pentru rânduri -->
       <template #row="{ row }">
         <td class="px-4 py-2">{{ row.id }}</td>
         <td class="px-4 py-2">{{ row.fullName }}</td>
@@ -75,10 +95,26 @@ const roleClass = (r) =>
         <td class="px-4 py-2">
           <div class="flex items-center gap-2 text-gray-400">
             <button title="Edit" class="hover:text-gray-600">
-              <IconsEdit class="h-4 w-4" />
+              <IconsEdit
+                @click="
+                  router.push({
+                    name: 'users-edit-user-id',
+                    params: { id: row.id },
+                  })
+                "
+                class="h-4 w-4"
+              />
             </button>
 
-            <button title="Delete" class="hover:text-red-600">
+            <button
+              @click="
+                () => {
+                  userToDelete = row.id;
+                  openDelete = true;
+                }
+              "
+              title="Delete"
+            >
               <IconsDelete class="h-4 w-4" />
             </button>
           </div>
@@ -86,6 +122,16 @@ const roleClass = (r) =>
       </template>
     </Table>
   </div>
+  <UiModal v-model="openDelete" title="Delete User" size="lg">
+    <form class="space-y-4">
+      <p>Are you sure you want to delete this user ?</p>
+    </form>
+
+    <template #footer>
+      <UiButton intent="secondary" @click="openDelete = false">Cancel</UiButton>
+      <UiButton @click="deleteUser">Delete</UiButton>
+    </template>
+  </UiModal>
 </template>
 
 <style scoped></style>

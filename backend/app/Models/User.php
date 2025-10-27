@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -21,7 +22,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    
+
     protected $fillable = [
         'username','email','full_name','avatar','role','password',
     ];
@@ -49,9 +50,11 @@ class User extends Authenticatable
             'role' => UserRole::class,
         ];
     }
-    // protected function avatarUrl(): Attribute {
-    //     return Attribute::get(function () {
-    //         return $this->avatar ? asset('storage/'.$this->avatar) : null;
-    //     });
-    // }
+  protected function avatarUrl(): Attribute
+    {
+        return Attribute::get(function () {
+           if (!$this->avatar) return null;
+           return asset('storage/'.$this->avatar);
+        });
+    }
 }

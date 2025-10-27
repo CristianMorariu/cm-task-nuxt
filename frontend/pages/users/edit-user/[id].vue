@@ -1,45 +1,38 @@
 <script setup>
 const { $api } = useNuxtApp();
 const router = useRouter();
-const newUser = reactive({
-  fullName: "Test User",
-  username: "Tester",
-  email: "admin@gmail.com",
-  avatar: null,
-  role: null,
-  password: "",
-});
+const route = useRoute();
+console.log(route.params);
+const user = ref({});
 const errors = ref({});
 const rolesOptions = ref([]);
 onMounted(async () => {
-  const response = await $api("/api/meta/roles");
-  rolesOptions.value = response.data.reverse();
-  newUser.role = rolesOptions.value[0].key;
-  console.log(rolesOptions.value[0].key);
+  const response = await $api.get(`/api/users/${route.params.id}`);
+  user.value = response.data;
+  const getRoles = await $api.get("/api/meta/roles");
+  rolesOptions.value = getRoles.data.reverse();
+
+  console.log(response);
 });
-watch(
-  () => newUser.avatar,
-  (val) => {
-    console.log(val);
-  }
-);
+
 async function submit() {
   try {
+    console.log(user.value);
     const fd = new FormData();
-    // fd.append('_method', 'PATCH'); pt update
     // await $api.post(`/api/users/${userId}`, fd);
-    if (newUser.username) fd.append("username", newUser.username);
-    if (newUser.email) fd.append("email", newUser.email);
-    if (newUser.fullName) fd.append("fullName", newUser.fullName);
-    if (newUser.role) fd.append("role", newUser.role);
-    if (newUser.password) fd.append("password", newUser.password);
+    if (user.value.username) fd.append("username", user.value.username);
+    if (user.value.email) fd.append("email", user.value.email);
+    if (user.value.fullName) fd.append("fullName", user.value.fullName);
+    if (user.value.role) fd.append("role", user.value.role);
+    if (user.value.password) fd.append("password", user.value.password);
 
     // fișierul (dacă e selectat)
-    if (newUser.avatar instanceof File) {
-      fd.append("avatar", newUser.avatar, newUser.avatar.name);
+    if (user.value.avatar instanceof File) {
+      fd.append("avatar", user.value.avatar, user.value.avatar.name);
     }
+    fd.append("_method", "PATCH");
 
-    const response = await $api.post("/api/users", fd);
+    const response = await $api.post(`/api/users/${user.value.id}`, fd);
 
     console.log(response.data);
     router.push({ name: "users" });
@@ -53,30 +46,25 @@ async function submit() {
 </script>
 <template>
   <div class="space-y-6 lg:max-w-[80%] xl:max-w-[70%] 2xl:max-w-[60%]">
-    <h1 class="text-3xl font-semibold text-slate-700">Add new user</h1>
+    <h1 class="text-3xl font-semibold text-slate-700">
+      Edit user: <span>{{ user.username }}</span>
+    </h1>
 
     <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/70">
       <!-- grid 2 coloane -->
       <div class="grid gap-5 sm:grid-cols-2 flex-wrap">
         <div class="flex flex-col gap-3">
           <UiInput
-            v-model="newUser.fullName"
+            v-model="user.fullName"
             label="Enter full name"
             placeholder="Full name"
           />
           <div v-if="errors.fullName" style="color: orangered">
             {{ errors?.fullName[0] }}
           </div>
+
           <UiInput
-            v-model="newUser.username"
-            label="Enter username"
-            placeholder="Full name"
-          />
-          <div v-if="errors.username" style="color: orangered">
-            {{ errors?.username[0] }}
-          </div>
-          <UiInput
-            v-model="newUser.email"
+            v-model="user.email"
             label="Enter email"
             placeholder="Email"
           />
@@ -85,7 +73,7 @@ async function submit() {
           </div>
           <UiInput
             class="sm:mt-3"
-            v-model="newUser.password"
+            v-model="user.password"
             type="password"
             label="Enter password"
             placeholder="Password"
@@ -100,7 +88,11 @@ async function submit() {
         </div> -->
 
         <div class="flex flex-col">
-          <UiAvatarInput v-model="newUser.avatar" class="sm:mt-5" />
+          <UiAvatarInput
+            v-model="user.avatarUrl"
+            :src="user.avatarUrl"
+            class="sm:mt-5"
+          />
           <div v-if="errors.avatar" style="color: orangered">
             {{ errors?.avatar[0] }}
           </div>
@@ -111,7 +103,7 @@ async function submit() {
               >
 
               <select
-                v-model="newUser.role"
+                v-model="user.role"
                 class="w-full h-[45px] bg-transparent border border-slate-200 rounded-full pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-200 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer"
               >
                 <option
@@ -143,32 +135,11 @@ async function submit() {
           </div>
         </div>
       </div>
-      <!-- <UiSelectUser
-        v-model="newUser.role"
-        :options="rolesOptions"
-        label="Assign supervisor"
-        placeholder="Search"
-      /> -->
 
-      <!-- <p class="mt-4 text-sm text-red-500 italic">
-          *All fields are mandatory
-        </p> -->
       <div class="my-5 flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <button
-          type="button"
-          @click="reset"
-          class="rounded-full border-2 border-amber-400 px-6 py-2 font-semibold text-amber-500 hover:bg-amber-50"
-        >
-          RESET
-        </button>
+        <UiButton intent="secondary">RESET</UiButton>
 
-        <button
-          type="button"
-          @click="submit"
-          class="rounded-full bg-amber-400 px-6 py-2 font-semibold text-white hover:bg-amber-500"
-        >
-          ADD USER
-        </button>
+        <UiButton type="button" @click="submit"> EDIT USER </UiButton>
       </div>
     </div>
   </div>
