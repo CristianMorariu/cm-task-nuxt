@@ -47,7 +47,7 @@ class ProjectController extends Controller
      */
     public function show(string $id)
     {
-        $project = Project::with(['supervisor:id,username,email'])->findOrFail($id);
+        $project = Project::with(['supervisor:id,username,email,avatar'])->findOrFail($id);
         return new ProjectResource($project);
     }
 
@@ -58,7 +58,7 @@ class ProjectController extends Controller
     {
         $project = Project::findOrFail($id);
         $project->update($request->validated());
-        $project->load(['supervisor:id,username,email','tasks']);
+        $project->load(['supervisor:id,username,email, avatar','tasks']);
 
         return new ProjectResource($project);
     }

@@ -103,7 +103,16 @@ onMounted(async () => {
           </div>
 
           <div class="mt-3 flex justify-end">
-            <UiButton class="px-4">DETAILS</UiButton>
+            <UiButton
+              @click="
+                router.push({
+                  name: 'projects-show-id',
+                  params: { id: project.id },
+                })
+              "
+              class="px-4"
+              >DETAILS</UiButton
+            >
           </div>
         </footer>
       </template>

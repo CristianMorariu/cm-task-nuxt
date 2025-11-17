@@ -59,7 +59,7 @@ const prop = defineProps(["isOpen"]);
           </NuxtLink>
 
           <NuxtLink
-            :to="{ name: 'task-tracker' }"
+            :to="{ name: 'profile' }"
             class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
           >
             <IconsProfile class="w-5 h-5" />

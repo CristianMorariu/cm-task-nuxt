@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\ProfileController;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
@@ -58,6 +59,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('projects', ProjectController::class);
     Route::apiResource('users', UserController::class);
 });
-// Route::middleware('auth:sanctum')->group(function () {
-// });
-
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/me', [ProfileController::class, 'show']);
+    Route::patch('/me', [ProfileController::class, 'update']);
+    Route::patch('/me/password', [ProfileController::class, 'updatePassword']);
+});
