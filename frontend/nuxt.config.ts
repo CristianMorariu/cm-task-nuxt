@@ -16,5 +16,9 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["nuxt-toast"],
+  modules: ["nuxt-toast", "shadcn-nuxt"],
+  shadcn: {
+    prefix: "",
+    componentDir: "./components/ui",
+  },
 });
