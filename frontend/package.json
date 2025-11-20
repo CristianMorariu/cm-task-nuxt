@@ -17,7 +17,6 @@
     "nuxt": "^3.14.159",
     "nuxt-toast": "^1.2.0",
     "reka-ui": "^2.6.0",
-    "shadcn-nuxt": "^2.3.3",
     "tailwind-merge": "^3.4.0",
     "vue": "latest",
     "vue-router": "latest"
@@ -25,6 +24,7 @@
   "devDependencies": {
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
+    "shadcn-nuxt": "^2.3.3",
     "tailwindcss": "^3.4.15",
     "typescript": "^5.6.3",
     "vue-tsc": "^2.1.10"

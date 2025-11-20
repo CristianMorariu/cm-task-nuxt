@@ -1,6 +1,4 @@
 <script setup>
-import Button from "~/components/ui/Button.vue";
-
 const { $api } = useNuxtApp();
 const users = ref(null);
 const router = useRouter();
@@ -58,8 +56,6 @@ async function deleteUser() {
         class="!bg-[#00C7C7] !hover:bg-[#00B7B7] px-5"
         >ADD USER</UiButton
       >
-
-      <Button>Merge</Button>
     </div>
 
     <Table v-if="users" :data="users">
