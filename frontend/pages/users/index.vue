@@ -1,5 +1,5 @@
 <script setup>
-import Button from "~/components/Ui/custom/BaseButton.vue";
+import Button from "~/components/ui/Button.vue";
 
 const { $api } = useNuxtApp();
 const users = ref(null);
