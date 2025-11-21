@@ -11,9 +11,5 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["nuxt-toast", "shadcn-nuxt"],
-  shadcn: {
-    prefix: "Ui", // sau "" dacă vrei <Button> în loc de <UiButton>
-    componentDir: "./components/ui", // recomand varianta asta, vezi doc-urile Nuxt
-  },
+  modules: ["nuxt-toast"],
 });
