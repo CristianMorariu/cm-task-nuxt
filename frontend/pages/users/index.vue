@@ -15,17 +15,25 @@ const roleClass = (r) =>
     user: "bg-gray-100 text-gray-800 ring-1 ring-gray-200",
   }[r] ?? "bg-gray-100 text-gray-800 ring-1 ring-gray-200");
 
+const page = ref(1);
+const isLoading = ref(true);
+
 onMounted(() => {
   fetchUsers();
 });
 
 async function fetchUsers() {
+  isLoading.value = true;
   try {
-    const resp = await $api.get("/api/users");
-    console.log(resp);
-    users.value = resp.data;
+    const resp = await $api.get("/api/users", {
+      params: { page: page.value },
+    });
+    users.value = resp;
+    console.log(users.value);
   } catch (error) {
     console.log(error);
+  } finally {
+    isLoading.value = false;
   }
 }
 async function deleteUser() {
@@ -45,6 +53,11 @@ async function deleteUser() {
     });
   }
 }
+
+async function handlePageChange(newPage) {
+  page.value = newPage;
+  await fetchUsers(); // aici refaci request-ul cu ?page=newPage
+}
 </script>
 <template>
   <div>
@@ -58,7 +71,7 @@ async function deleteUser() {
       >
     </div>
 
-    <Table v-if="users" :data="users">
+    <Table v-if="users" :data="users.data">
       <template #thead>
         <th class="px-4 py-2">ID</th>
         <th class="px-4 py-2">Full Name</th>
@@ -119,6 +132,13 @@ async function deleteUser() {
             </button>
           </div>
         </td>
+      </template>
+      <template #tfoot>
+        <UiPagination
+          :meta="users?.meta"
+          :loading="isLoading"
+          @change="handlePageChange"
+        />
       </template>
     </Table>
   </div>

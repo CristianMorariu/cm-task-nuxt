@@ -2,6 +2,12 @@
 const props = defineProps({
   data: { type: Array, required: true },
 });
+const slots = useSlots();
+const columnCount = computed(() => {
+  const theadVNodes = slots.thead ? slots.thead() : [];
+  return theadVNodes.length;
+});
+console.log(columnCount);
 </script>
 
 <template>
@@ -24,6 +30,13 @@ const props = defineProps({
           <slot name="row" :row="row" />
         </tr>
       </tbody>
+      <tfoot>
+        <tr>
+          <td :colspan="columnCount">
+            <slot name="tfoot" />
+          </td>
+        </tr>
+      </tfoot>
     </table>
   </div>
 </template>
