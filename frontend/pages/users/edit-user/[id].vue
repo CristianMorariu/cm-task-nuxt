@@ -89,8 +89,8 @@ async function submit() {
 
         <div class="flex flex-col">
           <UiAvatarInput
-            v-model="user.avatarUrl"
-            :src="user.avatarUrl"
+            v-model="user.avatar_url"
+            :src="user.avatar_url"
             class="sm:mt-5"
           />
           <div v-if="errors.avatar" style="color: orangered">

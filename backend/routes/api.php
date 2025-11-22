@@ -10,40 +10,40 @@ use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
-Route::post('/login', function (Request $request) {
-    $data = $request->validate([
-        'login'    => ['required', 'string'],
-        'password' => ['required', 'string'],
-    ]);
+// Route::post('/login', function (Request $request) {
+//     $data = $request->validate([
+//         'login'    => ['required', 'string'],
+//         'password' => ['required', 'string'],
+//     ]);
 
-    $login = trim($data['login']);
+//     $login = trim($data['login']);
 
-    // detectăm email vs username
-    $query = User::query();
-    if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
-        $query->whereRaw('LOWER(email) = ?', [mb_strtolower($login)]);
-    } else {
-        $query->whereRaw('LOWER(username) = ?', [mb_strtolower($login)]);
-    }
+//     // detectăm email vs username
+//     $query = User::query();
+//     if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
+//         $query->whereRaw('LOWER(email) = ?', [mb_strtolower($login)]);
+//     } else {
+//         $query->whereRaw('LOWER(username) = ?', [mb_strtolower($login)]);
+//     }
 
-    $user = $query->first();
+//     $user = $query->first();
 
-    if (!$user || !Hash::check($data['password'], $user->password)) {
-        return response()->json(['message' => 'Invalid credentials'], 422);
-    }
+//     if (!$user || !Hash::check($data['password'], $user->password)) {
+//         return response()->json(['message' => 'Invalid credentials'], 422);
+//     }
 
-    $token = $user->createToken('bruno')->plainTextToken;
+//     $token = $user->createToken('bruno')->plainTextToken;
 
-    return response()->json([
-        'token' => $token,
-        'user'  => [
-            'id'       => $user->id,
-            'username' => $user->username,
-            'email'    => $user->email,
-            'role'     => is_object($user->role) ? $user->role->value : $user->role,
-        ],
-    ]);
-});
+//     return response()->json([
+//         'token' => $token,
+//         'user'  => [
+//             'id'       => $user->id,
+//             'username' => $user->username,
+//             'email'    => $user->email,
+//             'role'     => is_object($user->role) ? $user->role->value : $user->role,
+//         ],
+//     ]);
+// });
 
 Route::get('/meta/roles', function () {
     // cache optional, 1 oră

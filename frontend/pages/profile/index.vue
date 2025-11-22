@@ -1,46 +1,43 @@
 <script setup>
 const { $api } = useNuxtApp();
-const router = useRouter();
-const route = useRoute();
-console.log(route.params);
 const myProfile = ref({});
 const errors = ref({});
-const rolesOptions = ref([]);
+const resetPassword = ref({
+  current_password: null,
+  password: null,
+});
 
+const toast = useToast();
 onMounted(async () => {
   const response = await $api.get(`/api/me`);
   myProfile.value = response.data;
-
   console.log(myProfile.value);
 });
 
 async function submit() {
   try {
-    console.log(myProfile.value);
     const fd = new FormData();
-    // await $api.post(`/api/myProfiles/${myProfileId}`, fd);
-    if (myProfile.value.myProfilename)
-      fd.append("myProfilename", myProfile.value.myProfilename);
-    if (myProfile.value.email) fd.append("email", myProfile.value.email);
     if (myProfile.value.fullName)
       fd.append("fullName", myProfile.value.fullName);
-    if (myProfile.value.role) fd.append("role", myProfile.value.role);
-    if (myProfile.value.password)
-      fd.append("password", myProfile.value.password);
-
+    if (myProfile.value.email) fd.append("email", myProfile.value.email);
     // fișierul (dacă e selectat)
     if (myProfile.value.avatar instanceof File) {
       fd.append("avatar", myProfile.value.avatar, myProfile.value.avatar.name);
     }
     fd.append("_method", "PATCH");
+    await $api.post(`/api/me`, fd);
 
-    const response = await $api.post(
-      `/api/myProfiles/${myProfile.value.id}`,
-      fd
-    );
-
-    console.log(response.data);
-    router.push({ name: "myProfiles" });
+    if (resetPassword.value.password || resetPassword.value.current_password) {
+      resetPassword.value.password_confirmation = resetPassword.value.password;
+      await $api.patch(`/api/me/password`, resetPassword.value);
+    }
+    // await auth.logout();
+    // trebuie sterse cookiurile si trimis la login
+    errors.value = {};
+    toast.success({
+      title: "User actualizat",
+      message: "Profilul a fost actualizat cu success.",
+    });
   } catch (error) {
     console.log(error);
     errors.value = error.response?.data?.errors ?? {
@@ -76,13 +73,16 @@ async function submit() {
           </div>
           <UiInput
             class="sm:mt-3"
-            v-model="myProfile.password"
+            v-model="resetPassword.current_password"
             type="password"
-            label="Enter password"
-            placeholder="Password"
+            label="Enter current password"
+            placeholder="Current Password"
           />
           <div v-if="errors.password" style="color: orangered">
             {{ errors?.password[0] }}
+          </div>
+          <div v-if="errors?.message" style="color: orangered">
+            {{ errors?.message }}
           </div>
         </div>
         <!-- <div class="mt-6">
@@ -92,14 +92,14 @@ async function submit() {
 
         <div class="flex flex-col">
           <UiAvatarInput
-            v-model="myProfile.avatarUrl"
-            :src="myProfile.avatarUrl"
+            v-model="myProfile.avatar"
+            :src="myProfile.avatar_url"
             class="sm:mt-5"
           />
           <div v-if="errors.avatar" style="color: orangered">
             {{ errors?.avatar[0] }}
           </div>
-          <div class="relative mt-4">
+          <!-- <div class="relative mt-4">
             <label for="select"
               ><span class="block mb-1 text-sm font-medium text-slate-600"
                 >Choose myProfile role</span
@@ -135,7 +135,18 @@ async function submit() {
             <div v-if="errors.role" style="color: orangered">
               {{ errors?.role[0] }}
             </div>
-          </div>
+          </div> -->
+
+          <UiInput
+            class="sm:mt-3"
+            v-model="resetPassword.password"
+            type="password"
+            label="New password"
+            placeholder="New Password"
+          />
+          <!-- <div v-if="errors.password" style="color: orangered">
+            {{ errors?.password[0] }}
+          </div> -->
         </div>
       </div>
 
