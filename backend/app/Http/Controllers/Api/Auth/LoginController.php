@@ -11,30 +11,43 @@ use Symfony\Component\HttpFoundation\Response;
 
 class LoginController extends Controller
 {
-     public function __invoke(Request $request)
+    public function __invoke(Request $request)
     {
-
+        // dacă ești deja logat, întoarce direct user-ul curent
         if (Auth::check()) {
-        return response()->json(['already' => true], 200);
-    }
-    
+            $user = Auth::user();
+
+            return response()->json([
+                'already' => true,
+                'user' => [
+                    'id'       => $user->id,
+                    'username' => $user->username,
+                    'email'    => $user->email,
+                ],
+            ], 200);
+        }
+
         $data = $request->validate([
-            'login'    => ['required','string'], // email SAU username
-            'password' => ['required','string'],
-            'remember' =>['boolean']
+            'login'    => ['required', 'string'], // email SAU username
+            'password' => ['required', 'string'],
+            'remember' => ['boolean'],
         ]);
 
-        $login = $data['login'];
+        $login   = $data['login'];
         $isEmail = filter_var($login, FILTER_VALIDATE_EMAIL);
 
         $credentials = [
             $isEmail ? 'email' : 'username' => $login,
-            'password' => $data['password'],
+            'password'                      => $data['password'],
         ];
 
         $remember = $data['remember'] ?? false;
+
         if (! Auth::attempt($credentials, $remember)) {
-            return response()->json(['message' => 'Invalid credentials'], Response::HTTP_UNAUTHORIZED);
+            return response()->json(
+                ['message' => 'Invalid credentials'],
+                Response::HTTP_UNAUTHORIZED
+            );
         }
 
         // setează cookie de sesiune + protecție fixation
@@ -43,9 +56,12 @@ class LoginController extends Controller
         $user = Auth::user();
 
         return response()->json([
-        'id' => Auth::id(),
-        'username' => Auth::user()->username,
-        'email' => Auth::user()->email,
-        ]);
+            'already' => false,
+            'user' => [
+                'id'       => $user->id,
+                'username' => $user->username,
+                'email'    => $user->email,
+            ],
+        ], 200);
     }
 }

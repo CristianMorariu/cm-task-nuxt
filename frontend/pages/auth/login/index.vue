@@ -8,6 +8,14 @@ const auth = useAuth();
 const router = useRouter();
 const route = useRoute();
 
+type LoginResponse = {
+  already: boolean;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+  };
+};
 const form: {
   login: string;
   password: string;
@@ -21,16 +29,17 @@ const form: {
 const errors: any = ref({});
 
 async function handleSubmit() {
-  console.log(form);
   try {
     const { $api } = useNuxtApp();
+
     await $api.get("/sanctum/csrf-cookie");
-    const resp = await $api.post("/login", form);
+
+    const resp = await $api.post<LoginResponse>("/login", form);
     console.log(resp);
-    auth.setUser(resp as any);
+    auth.setUser(resp?.user);
+
     router.push((route.query.redirect as string) || { name: "index" });
   } catch (error: any) {
-    console.log(error);
     errors.value = error.response.data.errors ?? {
       message: error.response.data.message,
     };

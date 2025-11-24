@@ -14,7 +14,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div class="flex justify-between mb-4">
+  <div class="w-full flex justify-between mb-4">
     <h2 class="text-5xl font-semibold text-slate-700">Projects</h2>
 
     <UiButton
@@ -22,29 +22,6 @@ onMounted(async () => {
       class="bg-[#00C7C7] hover:bg-[#00B7B7]"
       >ADD PROJECT</UiButton
     >
-
-    <!-- <UiProjectCard
-      title="Restaurant App"
-      deadline="22.04.2022"
-      description="Lorem Ipsum is simply dummy text of the printing and types industry. Lorem Ipsum has been the industry's…"
-      author-name="Wade Warren"
-      author-avatar="/img/people/wade.jpg"
-    >
-      <template #actions>
-        <img
-          src="@/assets/edit-2.svg"
-          class="h-4 w-4 cursor-pointer hover:text-slate-600"
-        />
-        <img
-          src="@/assets/slash.svg"
-          class="h-4 w-4 cursor-pointer hover:text-slate-600"
-        />
-      </template>
-
-      <template #cta>
-        <UiButton>DETAILS</UiButton>
-      </template>
-    </UiProjectCard> -->
   </div>
 
   <div class="grid grid-cols-2 gap-3">

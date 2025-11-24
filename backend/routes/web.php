@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\Auth\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/login', LoginController::class);
+Route::post('/login', LoginController::class)->name('login');
 Route::post('/register', RegisterController::class);
 Route::post('/logout', LogoutController::class)->middleware('auth');
 

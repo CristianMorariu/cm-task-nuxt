@@ -102,6 +102,7 @@ function lorem() {
 }
 const { $api } = useNuxtApp();
 const route = useRoute();
+
 const project = ref({});
 onMounted(async () => {
   try {

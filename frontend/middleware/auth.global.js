@@ -2,7 +2,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const publicNames = new Set(["auth-login", "auth-register"]);
 
   const { tried, ensureUser, isAuthenticated } = useAuth();
-
+  console.log(tried.value);
   if (!tried.value) {
     await ensureUser();
   }
@@ -13,7 +13,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
     return;
   }
-
   // 3) Dacă e rută protejată:
   if (!isAuthenticated.value) {
     return navigateTo(

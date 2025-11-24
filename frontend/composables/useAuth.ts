@@ -7,22 +7,34 @@ export function useAuth() {
   const { $api } = useNuxtApp();
 
   async function ensureUser() {
-    if (tried.value) return user.value;
-
+    // if (tried.value) return user.value;
+    console.log("useAuth", tried.value);
     const headers = import.meta.server
       ? useRequestHeaders(["cookie"])
       : undefined;
 
     try {
+      // const me = await $fetch(`${import.meta.env.VITE_API_BASE_URL}/api/me`, {
+      //   credentials: "include",
+      //   headers,
+      // });
+      // const me = await $api.get("/api/me", {
+      //   withCredentials: true,
+      //   headers,
+      // });
+
       const me = await $fetch(`${import.meta.env.VITE_API_BASE_URL}/api/me`, {
         credentials: "include",
-        headers,
+        headers: {
+          ...headers,
+          accept: "application/json",
+        },
       });
-      // if (import.meta.server) console.log("[/api/me] server response:", me);
-
+      if (import.meta.server) console.log("[/api/me] server response:", me);
+      console.log("USER USE AUTH", me);
       user.value = (me as any).data ?? me;
     } catch (err) {
-      // if (import.meta.server) console.error("[/api/me] server error:", err);
+      if (import.meta.server) console.error("[/api/me] server error:", err);
       user.value = null;
     } finally {
       tried.value = true;
@@ -39,6 +51,7 @@ export function useAuth() {
     }
   }
   function setUser(u: AuthUser | null) {
+    console.log("setUser");
     user.value = u;
     tried.value = true;
   }
