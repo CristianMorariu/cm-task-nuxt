@@ -11,17 +11,18 @@ const { user } = useAuth();
     </button>
 
     <h2 class="text-lg font-semibold">Dashboard</h2>
-
-    <div class="flex items-center space-x-3 cursor-default">
-      <div
-        class="h-8 w-8 overflow-hidden rounded-full ring-2 ring-gray-700 dark:ring-gray-100"
-      >
+    <ClientOnly>
+      <div class="flex items-center space-x-3 cursor-default">
         <div
-          class="w-8 h-8 bg-cyan-500 rounded-full text-white flex items-center justify-center"
+          class="h-8 w-8 overflow-hidden rounded-full ring-2 ring-gray-700 dark:ring-gray-100"
         >
-          {{ user?.username[0].toUpperCase() }}
+          <div
+            class="w-8 h-8 bg-cyan-500 rounded-full text-white flex items-center justify-center"
+          >
+            {{ user?.username[0].toUpperCase() }}
+          </div>
         </div>
       </div>
-    </div>
+    </ClientOnly>
   </header>
 </template>

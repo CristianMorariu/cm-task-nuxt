@@ -1,4 +1,5 @@
 <script setup>
+import UserPlaceholder from "@/assets/userPlaceholder.jpg";
 const { $api } = useNuxtApp();
 const dataTable = ref(null);
 const openEdit = ref(false);
@@ -24,7 +25,7 @@ onMounted(async () => {
     >
   </div>
 
-  <div class="grid grid-cols-2 gap-3">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
     <UiBaseCard v-for="project in dataTable" :key="project.id">
       <!-- <pre>{{ project }}</pre> -->
       <template #header>
@@ -70,10 +71,11 @@ onMounted(async () => {
         <footer class="mt-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <img
-              src="@/assets/edit-2.svg"
+              :src="project.supervisor.avatarUrl ?? UserPlaceholder"
               alt=""
-              class="h-8 w-8 rounded-full object-cover"
+              class="h-8 w-8 rounded-full object-cover ring-1 ring-black/10"
             />
+
             <span class="text-slate-700 font-medium">{{
               project?.supervisor?.username
             }}</span>

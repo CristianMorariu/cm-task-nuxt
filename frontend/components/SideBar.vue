@@ -28,30 +28,8 @@ const prop = defineProps(["isOpen"]);
         <div class="flex flex-col items-stretch">
           <NuxtLink
             :to="{ name: 'index' }"
-            class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
-          >
-            <IconsKeyboardOpen class="w-5 h-5" />
-            <span class="menu-item">Dashboard</span>
-          </NuxtLink>
-
-          <NuxtLink
-            :to="{ name: 'users' }"
-            class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
-          >
-            <IconsUsers class="w-5 h-5" />
-            <span class="menu-item">Users</span>
-          </NuxtLink>
-
-          <NuxtLink
-            :to="{ name: 'projects' }"
-            class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
-          >
-            <IconsProjects class="w-5 h-5" />
-            <span class="menu-item">Projects</span>
-          </NuxtLink>
-
-          <NuxtLink
-            ::to="{ name: 'task-tracker' }"
+            active-class="sidebar-item--active"
+            exact-active-class="sidebar-item--active"
             class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
           >
             <IconsTasks class="w-5 h-5" />
@@ -59,7 +37,38 @@ const prop = defineProps(["isOpen"]);
           </NuxtLink>
 
           <NuxtLink
+            :to="{ name: 'projects' }"
+            active-class="sidebar-item--active"
+            exact-active-class="sidebar-item--active"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
+          >
+            <IconsProjects class="w-5 h-5" />
+            <span class="menu-item">Projects</span>
+          </NuxtLink>
+          <NuxtLink
+            :to="{ name: 'users' }"
+            active-class="sidebar-item--active"
+            exact-active-class="sidebar-item--active"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
+          >
+            <IconsUsers class="w-5 h-5" />
+            <span class="menu-item">Users</span>
+          </NuxtLink>
+
+          <NuxtLink
+            :to="{ name: 'memento-mori' }"
+            active-class="sidebar-item--active"
+            exact-active-class="sidebar-item--active"
+            class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
+          >
+            <IconsMementoMori class="w-5 h-5" />
+            <span class="menu-item">Memento mori</span>
+          </NuxtLink>
+
+          <NuxtLink
             :to="{ name: 'profile' }"
+            active-class="sidebar-item--active"
+            exact-active-class="sidebar-item--active"
             class="flex items-center gap-2 w-full px-4 py-2 rounded-sm hover_class sidebar-item"
           >
             <IconsProfile class="w-5 h-5" />

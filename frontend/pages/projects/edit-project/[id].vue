@@ -6,32 +6,24 @@ const users = [
   { id: 3, name: "Wade Warren", avatar: "https://i.pravatar.cc/100?img=12" },
 ];
 const route = useRoute();
-console.log(route.params.id);
+
 const { $api } = useNuxtApp();
-const form = ref({
-  name: "Test Project",
-  description: "lorem inptur s fvsdgfsd  fsd fsd f sdfsfd",
+const usersList = ref([]);
+const project = ref({
+  name: "",
+  deadline: "",
   supervisor_id: null as number | null,
-  deadline: "2025-10-08", // 'YYYY-MM-DD'
-  status: "active",
+  description: "",
   files: [] as File[],
 });
-
-function reset() {
-  form.value = {
-    name: "Test Project",
-    description: "lorem inptur s fvsdgfsd  fsd fsd f sdfsfd",
-    supervisor_id: null as number | null,
-    deadline: "2025-10-08", // 'YYYY-MM-DD'
-    status: "active",
-    files: [] as File[],
-  };
-}
 onMounted(async () => {
   try {
     const resp = await $api.get(`/api/projects/${route.params.id}`);
-    form.value = resp.data;
-    console.log(form.value);
+    project.value = resp.data;
+    const users = await $api.get("/api/users");
+    usersList.value = users.data;
+    console.log(project.value);
+    console.log(usersList.value);
   } catch (error) {
     console.log(error);
   }
@@ -47,14 +39,7 @@ async function submit() {
   // form.files.forEach((f, i) => fd.append(`files[${i}]`, f));
 
   // console.log("submit ->", Object.fromEntries(fd as any));
-  console.log(form);
-
-  try {
-    const resp = await $api.post("/api/projects", form);
-    console.log(resp);
-  } catch (error) {
-    console.log(error);
-  }
+  console.log(project.value);
 }
 </script>
 
@@ -66,18 +51,18 @@ async function submit() {
       <!-- grid 2 coloane -->
       <div class="grid gap-6 sm:grid-cols-2">
         <UiInput
-          v-model="form.name"
+          v-model="project.name"
           label="Project name"
           placeholder="Full name"
         />
 
-        <UiDateInput v-model="form.deadline" label="Deadline" />
+        <UiDateInput v-model="project.deadline" label="Deadline" />
       </div>
 
       <div class="mt-6 grid gap-6 sm:grid-cols-2">
         <UiSelectUser
-          v-model="form.supervisor_id"
-          :options="users"
+          v-model="project.supervisor_id"
+          :options="usersList"
           label="Assign supervisor"
           placeholder="Search"
         />
@@ -88,7 +73,7 @@ async function submit() {
 
       <div class="mt-6">
         <UiTextarea
-          v-model="form.description"
+          v-model="project.description"
           label="Project description"
           placeholder="Write the description"
           :rows="6"

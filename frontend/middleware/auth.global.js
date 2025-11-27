@@ -2,7 +2,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const publicNames = new Set(["auth-login", "auth-register"]);
 
   const { tried, ensureUser, isAuthenticated } = useAuth();
-  console.log(tried.value);
+
+  if (import.meta.server) return;
+
   if (!tried.value) {
     await ensureUser();
   }

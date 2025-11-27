@@ -9,3 +9,9 @@ body {
   margin: 0;
   padding: 0;
 }
+.custom-bg {
+  background: linear-gradient(90deg, #212934 0%, #627388 100%);
+}
+.sidebar-item--active {
+  @apply custom-bg text-white;
+}

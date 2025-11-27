@@ -10,6 +10,6 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
-
+  ssr: false,
   modules: ["nuxt-toast"],
 });

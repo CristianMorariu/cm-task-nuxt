@@ -7,38 +7,24 @@ export function useAuth() {
   const { $api } = useNuxtApp();
 
   async function ensureUser() {
-    // if (tried.value) return user.value;
-    console.log("useAuth", tried.value);
-    const headers = import.meta.server
-      ? useRequestHeaders(["cookie"])
-      : undefined;
+    // nu face nimic pe server (SSR)
+    if (import.meta.server) return user.value;
+
+    if (tried.value) return user.value;
+
+    tried.value = true;
 
     try {
-      // const me = await $fetch(`${import.meta.env.VITE_API_BASE_URL}/api/me`, {
-      //   credentials: "include",
-      //   headers,
-      // });
-      // const me = await $api.get("/api/me", {
-      //   withCredentials: true,
-      //   headers,
-      // });
+      const { $api } = useNuxtApp(); // instanța ta axios
+      const me = await $api.get("/api/me"); // Authorization: Bearer <token> vine din interceptor
 
-      const me = await $fetch(`${import.meta.env.VITE_API_BASE_URL}/api/me`, {
-        credentials: "include",
-        headers: {
-          ...headers,
-          accept: "application/json",
-        },
-      });
-      if (import.meta.server) console.log("[/api/me] server response:", me);
-      console.log("USER USE AUTH", me);
-      user.value = (me as any).data ?? me;
+      console.log("USER USE AUTH", me.data);
+      user.value = me.data.data ?? me.data;
     } catch (err) {
-      if (import.meta.server) console.error("[/api/me] server error:", err);
+      console.error("[/api/me] error:", err);
       user.value = null;
-    } finally {
-      tried.value = true;
     }
+
     return user.value;
   }
 

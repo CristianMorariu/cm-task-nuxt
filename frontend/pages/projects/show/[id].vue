@@ -1,19 +1,4 @@
-<script setup lang="ts">
-// props / mock; în proiectul tău le alimentezi din API
-// const project = {
-//   title: "Restaurant App",
-//   deadlineFormatted: "22.04.2022",
-//   description: [
-//     "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-//     "It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.",
-//   ],
-//   supervisor: {
-//     fullName: "Cody Fisher",
-//     email: "cody@example.com",
-//     avatarUrl: "https://i.pravatar.cc/100?img=7",
-//   },
-// };
-
+<script setup>
 const documents = [
   { id: 1, name: "Document 1.pdf", size: "245 KB" },
   { id: 2, name: "Document 2.docx", size: "1.2 MB" },
@@ -75,7 +60,7 @@ const tasks = [
 
 const selectedFilter = ref("all");
 
-function statusLabel(s: string) {
+function statusLabel(s) {
   return (
     {
       todo: "TO DO",
@@ -86,7 +71,7 @@ function statusLabel(s: string) {
   );
 }
 
-function statusClass(s: string) {
+function statusClass(s) {
   return (
     {
       todo: "bg-orange-100 text-orange-700",
@@ -118,12 +103,16 @@ onMounted(async () => {
 <template>
   <div class="mx-auto max-w-7xl">
     <!-- Title -->
-    <h1 class="text-2xl font-semibold text-slate-900">{{ project.title }}</h1>
+    <h1 class="text-2xl font-semibold text-slate-900 mb-3">
+      {{ project.name }}
+    </h1>
 
     <!-- Top: Description + Docs -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- class="grid grid-cols-1 lg:grid-cols-3 gap-6" -->
+    <div>
       <!-- Description card -->
-      <UiBaseCard class="lg:col-span-2">
+      <!-- class="lg:col-span-2" -->
+      <UiBaseCard class="w-full min-h-52">
         <div class="flex items-start justify-between gap-4">
           <h2 class="text-lg font-semibold text-slate-900">
             Project Description
@@ -136,15 +125,15 @@ onMounted(async () => {
         </div>
 
         <div class="mt-4 space-y-4 text-slate-600 leading-relaxed">
-          <p v-for="(para, i) in project.description" :key="i">{{ para }}</p>
+          <p>{{ project.description }}</p>
         </div>
 
         <!-- Supervisor -->
         <div class="mt-6">
           <div class="text-slate-900 font-medium">Supervisor</div>
-          <div class="mt-3 flex items-center gap-3">
+          <div class="mt-3 flex items-center gap-3" v-if="project.supervisor">
             <img
-              :src="project.supervisor.avatarUrl"
+              :src="project.supervisor?.avatarUrl"
               alt=""
               class="h-10 w-10 rounded-full object-cover ring-1 ring-black/10"
             />
@@ -161,7 +150,7 @@ onMounted(async () => {
       </UiBaseCard>
 
       <!-- Documentation card -->
-      <aside class="lg:col-span-1">
+      <!-- <aside class="lg:col-span-1">
         <div
           class="rounded-2xl bg-white shadow-sm ring-1 ring-black/5 p-6 lg:sticky lg:top-6"
         >
@@ -180,7 +169,6 @@ onMounted(async () => {
                 <p class="truncate text-xs text-slate-500">{{ doc.size }}</p>
               </div>
               <div class="flex items-center gap-2 shrink-0 text-slate-400">
-                <!-- icons placeholder -->
                 <button title="Download" class="hover:text-slate-600">
                   ⬇️
                 </button>
@@ -197,11 +185,11 @@ onMounted(async () => {
             UPLOAD FILE
           </button>
         </div>
-      </aside>
+      </aside> -->
     </div>
 
     <!-- Tasks header -->
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between my-5">
       <h2 class="text-xl font-semibold text-slate-900">Tasks</h2>
       <div class="flex items-center gap-3">
         <label class="sr-only">Filter</label>

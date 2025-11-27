@@ -1,23 +1,25 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 
-type Option = { id: number; name: string; avatar?: string };
+type Option = { id: number; fullName: string; avatar_url?: string };
 
 const props = defineProps<{
   modelValue?: number | null;
   label?: string;
-  options: Option[];
+  options: any[];
   placeholder?: string;
 }>();
+console.log(props);
 const emit = defineEmits<{
   (e: "update:modelValue", v: number | null): void;
 }>();
 
 const q = ref("");
 const filtered = computed(() =>
-  props.options.filter((o) =>
-    o.name.toLowerCase().includes(q.value.toLowerCase())
-  )
+  props.options.filter((o) => {
+    console.log(o.fullName);
+    o.fullName.toLowerCase().includes(q.value.toLowerCase());
+  })
 );
 
 function select(id: number) {
@@ -54,12 +56,12 @@ function select(id: number) {
             class="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-slate-50"
           >
             <img
-              v-if="o.avatar"
-              :src="o.avatar"
+              v-if="o.avatar_url"
+              :src="o.avatar_url"
               class="h-6 w-6 rounded-full object-cover"
               alt=""
             />
-            <span class="text-slate-700">{{ o.name }}</span>
+            <span class="text-slate-700">{{ o.fullName }}</span>
           </button>
           <div v-if="!filtered.length" class="px-3 py-2 text-slate-400 text-sm">
             No results
@@ -73,13 +75,13 @@ function select(id: number) {
         class="flex items-center gap-2 rounded-full bg-white/90 px-3 py-1.5 border border-slate-200"
       >
         <img
-          v-if="options.find((o) => o.id === modelValue)?.avatar"
-          :src="options.find(o=>o.id===modelValue)!.avatar"
+          v-if="options.find((o) => o.id === modelValue)?.avatar_url"
+          :src="options.find(o=>o.id===modelValue)!.avatar_url"
           class="h-7 w-7 rounded-full object-cover"
           alt=""
         />
         <span class="text-slate-700 text-sm">{{
-          options.find((o) => o.id === modelValue)?.name
+          options.find((o) => o.id === modelValue)?.fullName
         }}</span>
       </div>
     </div>
