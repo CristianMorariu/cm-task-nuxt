@@ -1,62 +1,37 @@
 <script setup>
-const documents = [
-  { id: 1, name: "Document 1.pdf", size: "245 KB" },
-  { id: 2, name: "Document 2.docx", size: "1.2 MB" },
-  { id: 3, name: "Document 3.pdf", size: "842 KB" },
-  { id: 4, name: "Document 4.docx", size: "513 KB" },
-  { id: 5, name: "Document 5.pdf", size: "312 KB" },
-];
+const toast = useToast();
+const addTaskModal = ref(false);
+const newTask = reactive({
+  name: "",
+  status: "todo",
+  dueDate: "",
+  description: "",
+  priority: "medium",
+  completedAt: "",
+  assignee: [],
+});
 
-const tasks = [
-  {
-    id: 1,
-    title: "Design Menu",
-    status: "todo",
-    deadlineFormatted: "22.04.2022",
-    excerpt: lorem(),
-    isOverdue: false,
-  },
-  {
-    id: 2,
-    title: "Design Navbar",
-    status: "taken",
-    deadlineFormatted: "22.04.2022",
-    excerpt: lorem(),
-    isOverdue: false,
-  },
-  {
-    id: 3,
-    title: "Design Menu",
-    status: "in_progress",
-    deadlineFormatted: "24.04.2022",
-    excerpt: lorem(),
-    isOverdue: true,
-  },
-  {
-    id: 4,
-    title: "Design Menu",
-    status: "done",
-    deadlineFormatted: "22.04.2022",
-    excerpt: lorem(),
-    isOverdue: false,
-  },
-  {
-    id: 5,
-    title: "Design Menu",
-    status: "todo",
-    deadlineFormatted: "22.04.2022",
-    excerpt: lorem(),
-    isOverdue: false,
-  },
-  {
-    id: 6,
-    title: "Design Menu",
-    status: "in_progress",
-    deadlineFormatted: "22.04.2022",
-    excerpt: lorem(),
-    isOverdue: false,
-  },
-];
+const statusList = ["todo", "doing", "done"];
+const priorityList = ["low", "medium", "high"];
+
+// const tasks = [
+//   {
+//     id: 1,
+//     title: "Design Menu",
+//     status: "todo",
+//     deadlineFormatted: "22.04.2022",
+//     excerpt: lorem(),
+//     isOverdue: false,
+//   },
+//   {
+//     id: 2,
+//     title: "Design Navbar",
+//     status: "taken",
+//     deadlineFormatted: "22.04.2022",
+//     excerpt: lorem(),
+//     isOverdue: false,
+//   },
+// ];
 
 const selectedFilter = ref("all");
 
@@ -64,7 +39,7 @@ function statusLabel(s) {
   return (
     {
       todo: "TO DO",
-      in_progress: "IN PROGRESS",
+      doing: "IN PROGRESS",
       taken: "TAKEN",
       done: "DONE",
     }[s] ?? s
@@ -82,22 +57,46 @@ function statusClass(s) {
   );
 }
 
-function lorem() {
-  return "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's.";
-}
 const { $api } = useNuxtApp();
 const route = useRoute();
 
 const project = ref({});
+const tasks = ref({});
+const users = ref(null);
 onMounted(async () => {
   try {
     const resp = await $api.get(`/api/projects/${route.params.id}`);
     project.value = resp.data;
     console.log(project.value);
+    await refreshTasks();
+    // const resp1 = await $api.get(`/api/projects/${project.value.id}/tasks`);
+    // tasks.value = resp1.data;
+    const usr = await $api.get("/api/users");
+    users.value = usr.data;
+    console.log(users.value);
+    console.log(tasks.value);
   } catch (error) {
     console.log(error);
   }
 });
+const refreshTasks = async () => {
+  const resp1 = await $api.get(`/api/projects/${project.value.id}/tasks`);
+  tasks.value = resp1.data;
+};
+const createTask = () => {
+  console.log(newTask);
+  $api
+    .post(`/api/projects/${project.value.id}/tasks`, newTask)
+    .then(async (response) => {
+      await refreshTasks();
+      addTaskModal.value = false;
+      toast.success({
+        title: "Task nou creat!",
+        message: "Taskul a fost creat cu success.",
+      });
+    })
+    .catch((error) => console.log(error));
+};
 </script>
 
 <template>
@@ -191,7 +190,13 @@ onMounted(async () => {
     <!-- Tasks header -->
     <div class="flex items-center justify-between my-5">
       <h2 class="text-xl font-semibold text-slate-900">Tasks</h2>
-      <div class="flex items-center gap-3">
+      <button
+        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+        @click="addTaskModal = true"
+      >
+        <span class="text-sm">Adaugă task</span>
+      </button>
+      <!-- <div class="flex items-center gap-3">
         <label class="sr-only">Filter</label>
         <div class="relative">
           <select
@@ -209,7 +214,7 @@ onMounted(async () => {
             >▾</span
           >
         </div>
-      </div>
+      </div> -->
     </div>
 
     <!-- Tasks grid -->
@@ -220,7 +225,7 @@ onMounted(async () => {
         class="rounded-2xl bg-white shadow-sm ring-1 ring-black/5 p-5 flex flex-col"
       >
         <div class="flex items-start justify-between">
-          <h3 class="text-lg font-semibold text-slate-900">{{ task.title }}</h3>
+          <h3 class="text-lg font-semibold text-slate-900">{{ task.name }}</h3>
           <span
             :class="[
               'text-xs font-bold rounded-full px-2.5 py-1',
@@ -233,14 +238,17 @@ onMounted(async () => {
 
         <div class="mt-2 text-xs text-emerald-700">
           <span class="font-semibold">Deadline.</span>
-          <span class="ml-1">{{ task.deadlineFormatted }}</span>
-          <span v-if="task.isOverdue" class="ml-2 text-red-600 font-semibold"
+          <span class="ml-1">{{ task.dueDate }}</span>
+          <!-- <span v-if="task.isOverdue" class="ml-2 text-red-600 font-semibold"
             >Overdue</span
-          >
+          > -->
+          <span class="ml-2 text-red-600 font-semibold">{{
+            task.priority
+          }}</span>
         </div>
 
         <p class="mt-3 line-clamp-3 text-slate-600">
-          {{ task.excerpt }}
+          {{ task.description }}
         </p>
 
         <div class="mt-4 flex items-center gap-3 text-slate-400">
@@ -259,4 +267,116 @@ onMounted(async () => {
       </article>
     </div>
   </div>
+
+  <UiModal v-model="addTaskModal" title="Add New Task" size="lg">
+    <form class="space-y-4" @submit.prevent="">
+      <!-- grid 2 coloane -->
+      <div class="grid gap-6 sm:grid-cols-2">
+        <UiInput
+          v-model="newTask.name"
+          label="Task name"
+          placeholder="Task name"
+        />
+
+        <UiDateInput v-model="newTask.dueDate" label="Deadline" />
+        <div class="relative mt-4">
+          <label for="select"
+            ><span class="block mb-1 text-sm font-medium text-slate-600"
+              >Choose task status
+            </span>
+
+            <select
+              v-model="newTask.status"
+              class="w-full h-[45px] bg-transparent border border-slate-200 rounded-full pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-200 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer"
+            >
+              <option
+                v-for="status in statusList"
+                :value="status"
+                class="rounded-full"
+              >
+                {{ status.toUpperCase() }}
+              </option>
+            </select>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.2"
+              stroke="currentColor"
+              class="h-5 w-5 absolute top-9 right-2.5 text-slate-700"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+              />
+            </svg>
+          </label>
+        </div>
+        <div class="relative mt-4">
+          <label for="select"
+            ><span class="block mb-1 text-sm font-medium text-slate-600"
+              >Choose task priority</span
+            >
+
+            <select
+              v-model="newTask.priority"
+              class="w-full h-[45px] bg-transparent border border-slate-200 rounded-full pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-200 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer"
+            >
+              <option
+                v-for="priority in priorityList"
+                :value="priority"
+                class="rounded-full"
+              >
+                {{ priority.toUpperCase() }}
+              </option>
+            </select>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.2"
+              stroke="currentColor"
+              class="h-5 w-5 absolute top-9 right-2.5 text-slate-700"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+              />
+            </svg>
+          </label>
+        </div>
+      </div>
+
+      <div class="mt-6 grid gap-6 sm:grid-cols-2">
+        <UiSelectUser
+          v-if="users"
+          v-model="newTask.assignee.id"
+          :options="users"
+          label="Assign supervisor"
+          placeholder="Search"
+        />
+
+        <!-- preview-ul e deja în componentă prin chip; las celula dreaptă goală pentru aliniere -->
+        <div />
+      </div>
+
+      <div class="mt-6">
+        <UiTextarea
+          v-model="newTask.description"
+          label="Project description"
+          placeholder="Write the description"
+          :rows="6"
+        />
+      </div>
+    </form>
+
+    <template #footer>
+      <UiButton intent="secondary" @click="addTaskModal = false"
+        >Cancel</UiButton
+      >
+      <UiButton @click="createTask">Add Task</UiButton>
+    </template>
+  </UiModal>
 </template>

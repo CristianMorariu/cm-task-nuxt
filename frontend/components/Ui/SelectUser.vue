@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 
-type Option = { id: number; fullName: string; avatar_url?: string };
+type Option = { id: number; username: string; avatar_url?: string };
 
 const props = defineProps<{
   modelValue?: number | null;
@@ -17,8 +17,8 @@ const emit = defineEmits<{
 const q = ref("");
 const filtered = computed(() =>
   props.options.filter((o) => {
-    console.log(o.fullName);
-    o.fullName.toLowerCase().includes(q.value.toLowerCase());
+    console.log(o.username);
+    return o.username.toLowerCase().includes(q.value.toLowerCase());
   })
 );
 
@@ -61,7 +61,7 @@ function select(id: number) {
               class="h-6 w-6 rounded-full object-cover"
               alt=""
             />
-            <span class="text-slate-700">{{ o.fullName }}</span>
+            <span class="text-slate-700">{{ o.username }}</span>
           </button>
           <div v-if="!filtered.length" class="px-3 py-2 text-slate-400 text-sm">
             No results
@@ -81,7 +81,7 @@ function select(id: number) {
           alt=""
         />
         <span class="text-slate-700 text-sm">{{
-          options.find((o) => o.id === modelValue)?.fullName
+          options.find((o) => o.id === modelValue)?.username
         }}</span>
       </div>
     </div>
