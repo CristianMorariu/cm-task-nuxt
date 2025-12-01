@@ -100,4 +100,18 @@ class TaskController extends Controller
 
         return new TaskResource($task->fresh()->load(['project','assignee']));
     }
+
+    public function updateStatus(Request $request, Task $task)
+{
+    $request->validate([
+        'status' => ['required', 'in:todo,doing,done'],
+    ]);
+
+    $task->update([
+        'status' => $request->status,
+    ]);
+
+    return new TaskResource($task);
+}
+
 }

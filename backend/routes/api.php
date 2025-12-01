@@ -32,4 +32,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/my-tasks', [TaskController::class, 'myTasks']);
     Route::post('/tasks/{task}/take', [TaskController::class, 'take']);
+    Route::patch('/tasks/{task}/status', [TaskController::class, 'updateStatus']);
 });

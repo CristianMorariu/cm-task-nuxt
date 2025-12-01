@@ -97,6 +97,13 @@ const createTask = () => {
     })
     .catch((error) => console.log(error));
 };
+
+const takeTask = (idTask) => {
+  console.log(idTask);
+  const resp1 = $api.post(`/api/tasks/${project.value.id}/take`);
+  tasks.value = resp1.data;
+  // termin de luat taskul de afisat, "taken" la taskul deja luat, crud tasks. si infrumusetat, sters clg.
+};
 </script>
 
 <template>
@@ -222,7 +229,7 @@ const createTask = () => {
       <article
         v-for="task in tasks"
         :key="task.id"
-        class="rounded-2xl bg-white shadow-sm ring-1 ring-black/5 p-5 flex flex-col"
+        class="rounded-2xl bg-white shadow-sm ring-1 ring-black/5 p-5 flex flex-col justify-between"
       >
         <div class="flex items-start justify-between">
           <h3 class="text-lg font-semibold text-slate-900">{{ task.name }}</h3>
@@ -259,6 +266,7 @@ const createTask = () => {
         </div>
 
         <button
+          @click="takeTask(task.id)"
           type="button"
           class="mt-5 rounded-full bg-amber-500 text-white font-semibold py-2 hover:bg-amber-600"
         >
