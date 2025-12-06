@@ -97,17 +97,6 @@ onMounted(async () => {
       </template>
     </UiBaseCard>
   </div>
-
-  <UiModal v-model="openEdit" title="Create project" size="lg">
-    <form class="space-y-4">
-      <p>HI</p>
-    </form>
-
-    <template #footer>
-      <UiButton variant="ghost" @click="show = false">Cancel</UiButton>
-      <UiButton>Save</UiButton>
-    </template>
-  </UiModal>
 </template>
 
 <style scoped></style>

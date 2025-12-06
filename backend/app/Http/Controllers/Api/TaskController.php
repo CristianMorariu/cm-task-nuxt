@@ -14,16 +14,23 @@ use App\Http\Requests\UpdateTaskRequest;
 class TaskController extends Controller
 {
     // GET /api/projects/{project}/tasks
-    public function index(Project $project)
+    public function index(Project $project, Request $request)
     {
-        $tasks = $project->tasks()
-            ->with('assignee')
-            ->orderByRaw("FIELD(status, 'todo','doing','done')")
-            ->orderBy('position')
-            ->orderBy('id')
-            ->get();
+         $tasks = $project->tasks()
+        ->with('assignee')
+        ->orderByRaw("FIELD(status, 'todo','doing','done')")
+        ->orderBy('position')
+        ->orderBy('id');
 
-        return TaskResource::collection($tasks);
+    // FILTRARE DUPĂ STATUS
+    if ($request->has('status')) {
+        // poate fi string sau array → le transformăm în array
+        $statuses = (array) $request->input('status');
+
+        $tasks->whereIn('status', $statuses);
+    }
+
+    return TaskResource::collection($tasks->get());
     }
 
     // POST /api/projects/{project}/tasks

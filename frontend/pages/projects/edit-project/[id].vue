@@ -88,20 +88,20 @@ async function submit() {
       <p class="mt-4 text-sm text-red-500 italic">*All fields are mandatory</p>
 
       <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <button
+        <!-- <button
           type="button"
           @click="reset"
           class="rounded-full border-2 border-amber-400 px-6 py-2 font-semibold text-amber-500 hover:bg-amber-50"
         >
           RESET
-        </button>
+        </button> -->
 
         <button
           type="button"
           @click="submit"
           class="rounded-full bg-amber-400 px-6 py-2 font-semibold text-white hover:bg-amber-500"
         >
-          ADD PROJECT
+          EDIT PROJECT
         </button>
       </div>
     </div>

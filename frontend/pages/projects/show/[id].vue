@@ -1,6 +1,20 @@
 <script setup>
+import { Edit, Trash } from "lucide-vue-next";
 const toast = useToast();
+
+const { $api } = useNuxtApp();
+const route = useRoute();
+const statusList = ["todo", "doing", "done"];
+const priorityList = ["low", "medium", "high"];
+const selectedFilter = ref("all");
+const project = ref({});
+const tasks = ref({});
+const users = ref(null);
 const addTaskModal = ref(false);
+const taskToDelete = ref();
+const taskToEdit = ref();
+const openDelete = ref(false);
+const openEdit = ref(false);
 const newTask = reactive({
   name: "",
   status: "todo",
@@ -11,30 +25,98 @@ const newTask = reactive({
   assignee: [],
 });
 
-const statusList = ["todo", "doing", "done"];
-const priorityList = ["low", "medium", "high"];
+onMounted(async () => {
+  try {
+    const resp = await $api.get(`/api/projects/${route.params.id}`);
+    project.value = resp.data;
+    await refreshTasks();
+    const usr = await $api.get("/api/users");
+    users.value = usr.data;
+  } catch (error) {
+    console.log(error);
+    toast.error({
+      title: "A apărut o eroare la incarcarea paginii",
+    });
+  }
+});
+watch(selectedFilter, (filter) => {
+  const params = {};
+  if (filter !== "all") {
+    params.status = filter;
+  }
+  refreshTasks(params);
+});
 
-// const tasks = [
-//   {
-//     id: 1,
-//     title: "Design Menu",
-//     status: "todo",
-//     deadlineFormatted: "22.04.2022",
-//     excerpt: lorem(),
-//     isOverdue: false,
-//   },
-//   {
-//     id: 2,
-//     title: "Design Navbar",
-//     status: "taken",
-//     deadlineFormatted: "22.04.2022",
-//     excerpt: lorem(),
-//     isOverdue: false,
-//   },
-// ];
+const refreshTasks = async (status) => {
+  const resp1 = await $api.get(`/api/projects/${project.value.id}/tasks`, {
+    params: { status },
+  });
+  tasks.value = resp1.data;
+};
 
-const selectedFilter = ref("all");
+const createTask = () => {
+  $api
+    .post(`/api/projects/${project.value.id}/tasks`, newTask)
+    .then(async (response) => {
+      await refreshTasks();
+      addTaskModal.value = false;
+      toast.success({
+        title: "Task nou creat!",
+        message: "Taskul a fost creat cu success.",
+      });
+    })
+    .catch((error) => console.log(error));
+};
 
+const takeTask = async (idTask) => {
+  const takeT = await $api.post(`/api/tasks/${idTask}/take`);
+  console.log(takeT);
+  toast.success({
+    title: "Task luat cu success",
+    message: "Taskul a fost luat cu success.",
+  });
+  refreshTasks();
+};
+
+async function deleteTask() {
+  try {
+    const resp = await $api.delete(`/api/tasks/${taskToDelete.value}`);
+    refreshTasks();
+    openDelete.value = false;
+    toast.success({
+      title: "Task șters!",
+      message: "Task șters cu success.",
+    });
+  } catch (error) {
+    console.log(error);
+    toast.error({
+      title: "Eroare",
+      message: "A aparut o eroare la stergere.",
+    });
+  }
+}
+async function editTask() {
+  taskToEdit.value.due_date = taskToEdit.value.dueDate;
+  taskToEdit.value.user_id = taskToEdit.value.userId;
+  try {
+    const resp = await $api.patch(
+      `/api/tasks/${taskToEdit.value.id}`,
+      taskToEdit.value
+    );
+    refreshTasks();
+    openEdit.value = false;
+    toast.success({
+      title: "Task actualizat!",
+      message: "Task actualizat cu success.",
+    });
+  } catch (error) {
+    console.log(error);
+    toast.error({
+      title: "Eroare",
+      message: "A aparut o eroare.",
+    });
+  }
+}
 function statusLabel(s) {
   return (
     {
@@ -56,68 +138,15 @@ function statusClass(s) {
     }[s] ?? "bg-slate-100 text-slate-700"
   );
 }
-
-const { $api } = useNuxtApp();
-const route = useRoute();
-
-const project = ref({});
-const tasks = ref({});
-const users = ref(null);
-onMounted(async () => {
-  try {
-    const resp = await $api.get(`/api/projects/${route.params.id}`);
-    project.value = resp.data;
-    console.log(project.value);
-    await refreshTasks();
-    // const resp1 = await $api.get(`/api/projects/${project.value.id}/tasks`);
-    // tasks.value = resp1.data;
-    const usr = await $api.get("/api/users");
-    users.value = usr.data;
-    console.log(users.value);
-    console.log(tasks.value);
-  } catch (error) {
-    console.log(error);
-  }
-});
-const refreshTasks = async () => {
-  const resp1 = await $api.get(`/api/projects/${project.value.id}/tasks`);
-  tasks.value = resp1.data;
-};
-const createTask = () => {
-  console.log(newTask);
-  $api
-    .post(`/api/projects/${project.value.id}/tasks`, newTask)
-    .then(async (response) => {
-      await refreshTasks();
-      addTaskModal.value = false;
-      toast.success({
-        title: "Task nou creat!",
-        message: "Taskul a fost creat cu success.",
-      });
-    })
-    .catch((error) => console.log(error));
-};
-
-const takeTask = (idTask) => {
-  console.log(idTask);
-  const resp1 = $api.post(`/api/tasks/${project.value.id}/take`);
-  tasks.value = resp1.data;
-  // termin de luat taskul de afisat, "taken" la taskul deja luat, crud tasks. si infrumusetat, sters clg.
-};
 </script>
 
 <template>
-  <div class="mx-auto max-w-7xl">
-    <!-- Title -->
+  <div class="mx-auto w-full">
     <h1 class="text-2xl font-semibold text-slate-900 mb-3">
       {{ project.name }}
     </h1>
 
-    <!-- Top: Description + Docs -->
-    <!-- class="grid grid-cols-1 lg:grid-cols-3 gap-6" -->
     <div>
-      <!-- Description card -->
-      <!-- class="lg:col-span-2" -->
       <UiBaseCard class="w-full min-h-52">
         <div class="flex items-start justify-between gap-4">
           <h2 class="text-lg font-semibold text-slate-900">
@@ -154,74 +183,36 @@ const takeTask = (idTask) => {
           </div>
         </div>
       </UiBaseCard>
-
-      <!-- Documentation card -->
-      <!-- <aside class="lg:col-span-1">
-        <div
-          class="rounded-2xl bg-white shadow-sm ring-1 ring-black/5 p-6 lg:sticky lg:top-6"
-        >
-          <h2 class="text-lg font-semibold text-slate-900">Documentation</h2>
-
-          <ul class="mt-4 space-y-3 max-h-72 overflow-auto pr-1">
-            <li
-              v-for="doc in documents"
-              :key="doc.id"
-              class="flex items-center justify-between gap-3 rounded-xl border border-slate-200 px-3 py-2 hover:bg-slate-50"
-            >
-              <div class="min-w-0">
-                <p class="truncate text-sm font-medium text-slate-900">
-                  {{ doc.name }}
-                </p>
-                <p class="truncate text-xs text-slate-500">{{ doc.size }}</p>
-              </div>
-              <div class="flex items-center gap-2 shrink-0 text-slate-400">
-                <button title="Download" class="hover:text-slate-600">
-                  ⬇️
-                </button>
-                <button title="Preview" class="hover:text-slate-600">👁️</button>
-                <button title="Remove" class="hover:text-red-600">🗑️</button>
-              </div>
-            </li>
-          </ul>
-
-          <button
-            type="button"
-            class="mt-5 w-full rounded-full bg-cyan-500 text-white font-semibold py-2.5 hover:bg-cyan-600"
-          >
-            UPLOAD FILE
-          </button>
-        </div>
-      </aside> -->
     </div>
 
-    <!-- Tasks header -->
     <div class="flex items-center justify-between my-5">
       <h2 class="text-xl font-semibold text-slate-900">Tasks</h2>
-      <button
-        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
-        @click="addTaskModal = true"
-      >
-        <span class="text-sm">Adaugă task</span>
-      </button>
-      <!-- <div class="flex items-center gap-3">
-        <label class="sr-only">Filter</label>
-        <div class="relative">
-          <select
-            class="appearance-none rounded-full bg-white shadow-sm ring-1 ring-black/5 text-sm py-2 pl-4 pr-9"
-            v-model="selectedFilter"
-          >
-            <option value="all">All</option>
-            <option value="todo">To do</option>
-            <option value="in_progress">In progress</option>
-            <option value="taken">Taken</option>
-            <option value="done">Done</option>
-          </select>
-          <span
-            class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
-            >▾</span
-          >
+      <div class="flex gap-5">
+        <button
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+          @click="addTaskModal = true"
+        >
+          <span class="text-sm">Add new task</span>
+        </button>
+        <div class="flex items-center gap-3">
+          <label class="sr-only">Filter</label>
+          <div class="relative">
+            <select
+              class="appearance-none rounded-full bg-white shadow-sm ring-1 ring-black/5 text-sm py-2 pl-4 pr-9"
+              v-model="selectedFilter"
+            >
+              <option value="all">All</option>
+              <option value="todo">To do</option>
+              <option value="doing">In progress</option>
+              <option value="done">Done</option>
+            </select>
+            <span
+              class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+              >▾</span
+            >
+          </div>
         </div>
-      </div> -->
+      </div>
     </div>
 
     <!-- Tasks grid -->
@@ -229,10 +220,50 @@ const takeTask = (idTask) => {
       <article
         v-for="task in tasks"
         :key="task.id"
-        class="rounded-2xl bg-white shadow-sm ring-1 ring-black/5 p-5 flex flex-col justify-between"
+        class="rounded-2xl min-h-64 bg-white shadow-sm ring-1 ring-black/5 p-5 flex flex-col justify-between"
       >
         <div class="flex items-start justify-between">
           <h3 class="text-lg font-semibold text-slate-900">{{ task.name }}</h3>
+
+          <div class="flex items-center gap-3 text-slate-400">
+            <button
+              @click="
+                () => {
+                  taskToEdit = { ...task };
+                  openEdit = true;
+                }
+              "
+              class="hover:text-slate-600"
+            >
+              <Edit color="blue" />
+            </button>
+            <button
+              @click="
+                () => {
+                  taskToDelete = task.id;
+                  openDelete = true;
+                }
+              "
+              class="hover:text-slate-600"
+            >
+              <Trash color="red" />
+            </button>
+          </div>
+        </div>
+
+        <div class="text-xs flex items-center justify-between">
+          <div class="flex flex-col">
+            <div class="flex">
+              <span class="font-semibold text-emerald-700">Deadline:</span>
+              <span class="ml-1">{{ task.dueDate ?? "N/A" }}</span>
+            </div>
+            <div class="flex">
+              <span class="font-semibold">Priority:</span>
+              <span class="ml-2 text-red-600 font-semibold">{{
+                task.priority
+              }}</span>
+            </div>
+          </div>
           <span
             :class="[
               'text-xs font-bold rounded-full px-2.5 py-1',
@@ -243,34 +274,20 @@ const takeTask = (idTask) => {
           </span>
         </div>
 
-        <div class="mt-2 text-xs text-emerald-700">
-          <span class="font-semibold">Deadline.</span>
-          <span class="ml-1">{{ task.dueDate }}</span>
-          <!-- <span v-if="task.isOverdue" class="ml-2 text-red-600 font-semibold"
-            >Overdue</span
-          > -->
-          <span class="ml-2 text-red-600 font-semibold">{{
-            task.priority
-          }}</span>
-        </div>
-
-        <p class="mt-3 line-clamp-3 text-slate-600">
-          {{ task.description }}
+        <p class="mt-3 line-clamp-3 text-slate-600 border rounded-md p-1">
+          <span v-if="task.description">
+            {{ task.description }}
+          </span>
+          <span v-else>Description..</span>
         </p>
 
-        <div class="mt-4 flex items-center gap-3 text-slate-400">
-          <!-- small action icons placeholders -->
-          <button title="Edit" class="hover:text-slate-600">✏️</button>
-          <button title="Comment" class="hover:text-slate-600">💬</button>
-          <button title="Link" class="hover:text-slate-600">🔗</button>
-        </div>
-
         <button
+          :disabled="task.assignee"
           @click="takeTask(task.id)"
           type="button"
-          class="mt-5 rounded-full bg-amber-500 text-white font-semibold py-2 hover:bg-amber-600"
+          class="mt-5 rounded-full bg-amber-500 text-white font-semibold py-2 hover:bg-amber-600 disabled:bg-black"
         >
-          TAKE TASK
+          {{ task.assignee ? "TAKEN" : "TAKE TASK" }}
         </button>
       </article>
     </div>
@@ -278,7 +295,6 @@ const takeTask = (idTask) => {
 
   <UiModal v-model="addTaskModal" title="Add New Task" size="lg">
     <form class="space-y-4" @submit.prevent="">
-      <!-- grid 2 coloane -->
       <div class="grid gap-6 sm:grid-cols-2">
         <UiInput
           v-model="newTask.name"
@@ -365,8 +381,6 @@ const takeTask = (idTask) => {
           label="Assign supervisor"
           placeholder="Search"
         />
-
-        <!-- preview-ul e deja în componentă prin chip; las celula dreaptă goală pentru aliniere -->
         <div />
       </div>
 
@@ -385,6 +399,88 @@ const takeTask = (idTask) => {
         >Cancel</UiButton
       >
       <UiButton @click="createTask">Add Task</UiButton>
+    </template>
+  </UiModal>
+
+  <UiModal v-model="openDelete" title="Delete Task" size="lg">
+    <form class="space-y-4">
+      <p>Are you sure you want to delete this task ?</p>
+    </form>
+
+    <template #footer>
+      <UiButton intent="secondary" @click="openDelete = false">Cancel</UiButton>
+      <UiButton @click="deleteTask">Delete</UiButton>
+    </template>
+  </UiModal>
+
+  <UiModal v-model="openEdit" title="Edit Task" size="lg">
+    <form class="space-y-4" @submit.prevent="">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+      <UiInput v-model="taskToEdit.name" type="text" placeholder="Task name" />
+      <select
+        v-model="taskToEdit.userId"
+        class="w-full border rounded px-3 py-2"
+      >
+        <option :value="null">Unassigned</option>
+        <option v-for="u in users" :key="u.id" :value="u.id">
+          {{ u.fullName || u.username || u.email }}
+        </option>
+      </select>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Description</label
+        >
+        <textarea
+          v-model="taskToEdit.description"
+          rows="3"
+          class="w-full border rounded px-3 py-2"
+          placeholder="Task description"
+        ></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Status</label
+        >
+        <select
+          v-model="taskToEdit.status"
+          class="w-full border rounded px-3 py-2"
+        >
+          <option value="todo">To do</option>
+          <option value="doing">Doing</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Priority</label
+        >
+        <select
+          v-model="taskToEdit.priority"
+          class="w-full border rounded px-3 py-2"
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Due Date</label
+        >
+        <input
+          v-model="taskToEdit.dueDate"
+          type="date"
+          class="w-full border rounded px-3 py-2"
+        />
+      </div>
+    </form>
+
+    <template #footer>
+      <UiButton variant="ghost" @click="openEdit = false">Cancel</UiButton>
+      <UiButton @click="editTask">Save</UiButton>
     </template>
   </UiModal>
 </template>

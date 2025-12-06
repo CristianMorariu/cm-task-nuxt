@@ -14,7 +14,7 @@ async function fetchTask() {
   try {
     const res = await $api.get(`/api/tasks/${route.params.id}`);
     task.value = res.data;
-    console.log(task.value);
+    // console.log(task.value);
   } finally {
     loading.value = false;
   }

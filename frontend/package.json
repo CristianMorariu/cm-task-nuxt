@@ -14,6 +14,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "izitoast": "^1.4.0",
+    "lucide-vue-next": "^0.556.0",
     "nuxt": "^3.14.159",
     "nuxt-toast": "^1.2.0",
     "vue": "latest",
