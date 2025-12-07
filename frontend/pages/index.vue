@@ -7,7 +7,6 @@ onMounted(async () => {
   try {
     const resp = await $api.get("/api/my-tasks");
     myTasks.value = resp.data;
-    console.log(myTasks.value);
   } catch (error) {
     console.log(error);
   }

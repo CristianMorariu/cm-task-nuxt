@@ -1,20 +1,21 @@
 <script setup lang="ts">
 // mock users (în real: fetch din API)
-const users = [
-  { id: 1, name: "Devon Lane", avatar: "https://i.pravatar.cc/100?img=5" },
-  { id: 2, name: "Cody Fisher", avatar: "https://i.pravatar.cc/100?img=8" },
-  { id: 3, name: "Wade Warren", avatar: "https://i.pravatar.cc/100?img=12" },
-];
 const { $api } = useNuxtApp();
+const users = ref();
+const toast = useToast();
+const router = useRouter();
 const form = reactive({
-  name: "Test Project",
-  description: "lorem inptur s fvsdgfsd  fsd fsd f sdfsfd",
+  name: "",
+  description: "",
   supervisor_id: null as number | null,
-  deadline: "2025-10-08", // 'YYYY-MM-DD'
+  deadline: "", // 'YYYY-MM-DD'
   status: "active",
   files: [] as File[],
 });
-
+onMounted(async () => {
+  const usr = await $api.get("/api/users");
+  users.value = usr.data;
+});
 function reset() {
   form.name = "";
   form.description = "";
@@ -25,23 +26,18 @@ function reset() {
 }
 
 async function submit() {
-  // construiește payload; pentru fișiere, folosește FormData
-  // const fd = new FormData();
-  // fd.append("name", form.name);
-  // if (form.deadline) fd.append("deadline", form.deadline);
-  // if (form.supervisor_id)
-  //   fd.append("supervisor_id", String(form.supervisor_id));
-  // if (form.description) fd.append("description", form.description);
-  // form.files.forEach((f, i) => fd.append(`files[${i}]`, f));
-
-  // console.log("submit ->", Object.fromEntries(fd as any));
-  console.log(form);
-
   try {
     const resp = await $api.post("/api/projects", form);
-    console.log(resp);
+    router.push({ name: "projects" });
+    toast.success({
+      title: "Proiect creat!",
+      message: "Proiectul a fost creat cu success.",
+    });
   } catch (error) {
     console.log(error);
+    toast.error({
+      title: "A aparut o eroare!",
+    });
   }
 }
 </script>
@@ -62,7 +58,7 @@ async function submit() {
         <UiDateInput v-model="form.deadline" label="Deadline" />
       </div>
 
-      <div class="mt-6 grid gap-6 sm:grid-cols-2">
+      <div v-if="users" class="mt-6 grid gap-6 sm:grid-cols-2">
         <UiSelectUser
           v-model="form.supervisor_id"
           :options="users"

@@ -16,12 +16,25 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        $projects = Project::query()
-        ->with(['supervisor:id,username,email'])
-        ->withCount('tasks')
-        ->paginate(15);
+        $query = Project::query()
+        ->with(['supervisor:id,username,email,avatar'])
+        ->withCount('tasks');
 
-        return ProjectResource::collection($projects);
+    // doar proiectele mele? /api/projects?only_mine=1
+    if ($request->boolean('only_mine')) {
+        $query->where('user_id', $request->user()->id);
+    }
+
+    // filtrare după status /api/projects?status=active
+    if ($status = $request->query('status')) {
+        $query->where('status', $status);
+    }
+
+    $projects = $query
+        ->latest('id')
+        ->paginate($request->integer('per_page', 15));
+
+    return ProjectResource::collection($projects);
     }
 
     /**
@@ -58,7 +71,7 @@ class ProjectController extends Controller
     {
         $project = Project::findOrFail($id);
         $project->update($request->validated());
-        $project->load(['supervisor:id,username,email, avatar','tasks']);
+        $project->load(['supervisor:id,username,email,avatar','tasks']);
 
         return new ProjectResource($project);
     }

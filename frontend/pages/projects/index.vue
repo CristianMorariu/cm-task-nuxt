@@ -1,18 +1,43 @@
 <script setup>
+import { Edit, Trash } from "lucide-vue-next";
 import UserPlaceholder from "@/assets/userPlaceholder.jpg";
+
 const { $api } = useNuxtApp();
 const dataTable = ref(null);
-const openEdit = ref(false);
-const openDelete = ref(false);
 const router = useRouter();
-onMounted(async () => {
+const toast = useToast();
+const projectToDelete = ref();
+const openDelete = ref(false);
+
+onMounted(() => {
+  refreshProjects();
+});
+
+const refreshProjects = async () => {
   try {
     const resp = await $api.get("/api/projects");
-    console.log(resp);
     dataTable.value = resp.data;
-    console.log(dataTable.value);
   } catch (_) {}
-});
+};
+
+async function deleteProject() {
+  // console.log(projectToDelete.value);
+  try {
+    const resp = await $api.delete(`/api/projects/${projectToDelete.value}`);
+    await refreshProjects();
+    openDelete.value = false;
+    toast.success({
+      title: "Proiect șters!",
+      message: "Proiect șters cu success.",
+    });
+  } catch (error) {
+    console.log(error);
+    toast.error({
+      title: "Eroare",
+      message: "A aparut o eroare la stergere.",
+    });
+  }
+}
 </script>
 <template>
   <div class="w-full flex justify-between mb-4">
@@ -27,7 +52,6 @@ onMounted(async () => {
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
     <UiBaseCard v-for="project in dataTable" :key="project.id">
-      <!-- <pre>{{ project }}</pre> -->
       <template #header>
         <div class="flex items-start justify-between gap-3">
           <h3 class="text-xl font-semibold">{{ project.name }}</h3>
@@ -36,6 +60,7 @@ onMounted(async () => {
             <div class="text-green-600 font-semibold">
               Deadline: {{ project.deadlineFormatted }}
             </div>
+
             <button
               @click="
                 router.push({
@@ -43,27 +68,24 @@ onMounted(async () => {
                   params: { id: project.id },
                 })
               "
-              title="Edit"
-              class="hover:text-slate-600"
             >
-              <img
-                src="@/assets/edit-2.svg"
-                class="h-4 w-4 cursor-pointer hover:text-slate-600"
-              />
+              <Edit color="blue" class="h-5 w-5" />
             </button>
-            <button title="Link" class="hover:text-slate-600">
-              <img
-                src="@/assets/slash.svg"
-                class="h-4 w-4 cursor-pointer hover:text-slate-600"
-              />
+            <button
+              @click="
+                () => {
+                  projectToDelete = project.id;
+                  openDelete = true;
+                }
+              "
+            >
+              <Trash color="red" class="h-5 w-5" />
             </button>
           </div>
         </div>
       </template>
 
       <p class="text-slate-500">
-        <!-- Lorem Ipsum is simply dummy text of the printing and types industry.
-        Lorem Ipsum has been the industry's… -->
         {{ project.description }}
       </p>
 
@@ -97,6 +119,17 @@ onMounted(async () => {
       </template>
     </UiBaseCard>
   </div>
+
+  <UiModal v-model="openDelete" title="Delete Project" size="lg">
+    <form class="space-y-4">
+      <p>Are you sure you want to delete this project ?</p>
+    </form>
+
+    <template #footer>
+      <UiButton intent="secondary" @click="openDelete = false">Cancel</UiButton>
+      <UiButton @click="deleteProject">Delete</UiButton>
+    </template>
+  </UiModal>
 </template>
 
 <style scoped></style>

@@ -7,24 +7,17 @@ export function useAuth() {
   const { $api } = useNuxtApp();
 
   async function ensureUser() {
-    // nu face nimic pe server (SSR)
     if (import.meta.server) return user.value;
-
     if (tried.value) return user.value;
-
     tried.value = true;
-
     try {
-      const { $api } = useNuxtApp(); // instanța ta axios
-      const me = await $api.get("/api/me"); // Authorization: Bearer <token> vine din interceptor
-
-      console.log("USER USE AUTH", me.data);
+      const { $api } = useNuxtApp();
+      const me = await $api.get("/api/me");
       user.value = me.data.data ?? me.data;
     } catch (err) {
       console.error("[/api/me] error:", err);
       user.value = null;
     }
-
     return user.value;
   }
 
@@ -37,7 +30,6 @@ export function useAuth() {
     }
   }
   function setUser(u: AuthUser | null) {
-    console.log("setUser");
     user.value = u;
     tried.value = true;
   }

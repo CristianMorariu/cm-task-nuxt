@@ -11,7 +11,7 @@ class UserTinyResource extends JsonResource
         return [
             'id'    => (int) $this->id,
             'username'  => $this->username,
-            'avatarUrl'=> $this->avatar_url,
+            'avatarUrl' => $this->avatarUrl,
             'email' => $this->email,
             // adaugă aici câmpuri safe dacă îți mai trebuie (avatar, role etc.)
         ];

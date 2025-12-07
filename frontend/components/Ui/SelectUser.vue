@@ -9,7 +9,7 @@ const props = defineProps<{
   options: any[];
   placeholder?: string;
 }>();
-console.log(props);
+
 const emit = defineEmits<{
   (e: "update:modelValue", v: number | null): void;
 }>();
@@ -17,7 +17,6 @@ const emit = defineEmits<{
 const q = ref("");
 const filtered = computed(() =>
   props.options.filter((o) => {
-    console.log(o.username);
     return o.username.toLowerCase().includes(q.value.toLowerCase());
   })
 );

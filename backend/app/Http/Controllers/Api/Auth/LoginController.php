@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
-
+use Illuminate\Support\Facades\Storage;
 
 class LoginController extends Controller
 {
@@ -22,6 +22,11 @@ class LoginController extends Controller
                 'user' => [
                     'id'       => $user->id,
                     'username' => $user->username,
+                    'fullName'  => $user->full_name,
+                    'role'      => $user->role->value,
+                    'avatar_url' => $user->avatar
+                        ? Storage::disk('public')->url($user->avatar)
+                        : null,
                     'email'    => $user->email,
                 ],
             ], 200);
@@ -58,10 +63,15 @@ class LoginController extends Controller
         return response()->json([
             'already' => false,
             'user' => [
-                'id'       => $user->id,
-                'username' => $user->username,
-                'email'    => $user->email,
-            ],
+                    'id'       => $user->id,
+                    'username' => $user->username,
+                    'fullName'  => $user->full_name,
+                    'role'      => $user->role->value,
+                    'avatar_url' => $user->avatar
+                        ? Storage::disk('public')->url($user->avatar)
+                        : null,
+                    'email'    => $user->email,
+                ],
         ], 200);
     }
 }

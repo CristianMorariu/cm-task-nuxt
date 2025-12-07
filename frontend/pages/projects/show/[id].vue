@@ -217,7 +217,11 @@ function statusClass(s) {
 
     <!-- Tasks grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+      <UiBaseCard v-if="tasks && tasks.length === 0">
+        <p>Acest proiect încă nu are niciun task.</p>
+      </UiBaseCard>
       <article
+        v-else
         v-for="task in tasks"
         :key="task.id"
         class="rounded-2xl min-h-64 bg-white shadow-sm ring-1 ring-black/5 p-5 flex flex-col justify-between"
