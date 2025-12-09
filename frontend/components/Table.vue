@@ -7,7 +7,6 @@ const columnCount = computed(() => {
   const theadVNodes = slots.thead ? slots.thead() : [];
   return theadVNodes.length;
 });
-console.log(columnCount);
 </script>
 
 <template>

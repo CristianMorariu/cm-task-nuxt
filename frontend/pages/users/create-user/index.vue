@@ -1,47 +1,36 @@
 <script setup>
 const { $api } = useNuxtApp();
 const router = useRouter();
-const newUser = reactive({
-  fullName: "Test User",
-  username: "Tester",
-  email: "admin@gmail.com",
+const emptyUser = {
+  fullName: "",
+  username: "",
+  email: "",
   avatar: null,
-  role: null,
+  role: "user",
   password: "",
-});
+};
+const newUser = reactive({ ...emptyUser });
 const errors = ref({});
 const rolesOptions = ref([]);
 onMounted(async () => {
   const response = await $api("/api/meta/roles");
   rolesOptions.value = response.data.reverse();
   newUser.role = rolesOptions.value[0].key;
-  console.log(rolesOptions.value[0].key);
 });
-watch(
-  () => newUser.avatar,
-  (val) => {
-    console.log(val);
-  }
-);
+
 async function submit() {
   try {
     const fd = new FormData();
-    // fd.append('_method', 'PATCH'); pt update
-    // await $api.post(`/api/users/${userId}`, fd);
     if (newUser.username) fd.append("username", newUser.username);
     if (newUser.email) fd.append("email", newUser.email);
     if (newUser.fullName) fd.append("fullName", newUser.fullName);
     if (newUser.role) fd.append("role", newUser.role);
     if (newUser.password) fd.append("password", newUser.password);
-
-    // fișierul (dacă e selectat)
     if (newUser.avatar instanceof File) {
       fd.append("avatar", newUser.avatar, newUser.avatar.name);
     }
 
-    const response = await $api.post("/api/users", fd);
-
-    console.log(response.data);
+    await $api.post("/api/users", fd);
     router.push({ name: "users" });
   } catch (error) {
     console.log(error);
@@ -50,12 +39,18 @@ async function submit() {
     };
   }
 }
+const resetUser = () => {
+  Object.assign(newUser, emptyUser);
+};
 </script>
 <template>
   <div class="space-y-6 lg:max-w-[80%] xl:max-w-[70%] 2xl:max-w-[60%]">
     <h1 class="text-3xl font-semibold text-slate-700">Add new user</h1>
 
-    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/70">
+    <form
+      @submit.prevent=""
+      class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/70"
+    >
       <!-- grid 2 coloane -->
       <div class="grid gap-5 sm:grid-cols-2 flex-wrap">
         <div class="flex flex-col gap-3">
@@ -69,7 +64,7 @@ async function submit() {
           </div>
           <UiInput
             v-model="newUser.username"
-            label="Enter username"
+            label="Enter username*"
             placeholder="Full name"
           />
           <div v-if="errors.username" style="color: orangered">
@@ -77,7 +72,7 @@ async function submit() {
           </div>
           <UiInput
             v-model="newUser.email"
-            label="Enter email"
+            label="Enter email*"
             placeholder="Email"
           />
           <div v-if="errors.email" style="color: orangered">
@@ -87,17 +82,13 @@ async function submit() {
             class="sm:mt-3"
             v-model="newUser.password"
             type="password"
-            label="Enter password"
+            label="Enter password*"
             placeholder="Password"
           />
           <div v-if="errors.password" style="color: orangered">
             {{ errors?.password[0] }}
           </div>
         </div>
-        <!-- <div class="mt-6">
-        <p class="mb-2 text-slate-600 font-medium">Add documents and files</p>
-        <UiFileList v-model="form.files" />
-        </div> -->
 
         <div class="flex flex-col">
           <UiAvatarInput v-model="newUser.avatar" class="sm:mt-5" />
@@ -143,20 +134,11 @@ async function submit() {
           </div>
         </div>
       </div>
-      <!-- <UiSelectUser
-        v-model="newUser.role"
-        :options="rolesOptions"
-        label="Assign supervisor"
-        placeholder="Search"
-      /> -->
 
-      <!-- <p class="mt-4 text-sm text-red-500 italic">
-          *All fields are mandatory
-        </p> -->
       <div class="my-5 flex flex-col gap-3 sm:flex-row sm:justify-end">
         <button
           type="button"
-          @click="reset"
+          @click="resetUser"
           class="rounded-full border-2 border-amber-400 px-6 py-2 font-semibold text-amber-500 hover:bg-amber-50"
         >
           RESET
@@ -170,7 +152,7 @@ async function submit() {
           ADD USER
         </button>
       </div>
-    </div>
+    </form>
   </div>
 </template>
 

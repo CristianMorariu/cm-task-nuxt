@@ -15,7 +15,7 @@ export function useAuth() {
       const me = await $api.get("/api/me");
       user.value = me.data.data ?? me.data;
     } catch (err) {
-      console.error("[/api/me] error:", err);
+      // console.error("[/api/me] error:", err);
       user.value = null;
     }
     return user.value;

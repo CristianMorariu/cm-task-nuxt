@@ -2,7 +2,7 @@
 //https://memento-mori-calendar.netlify.app/
 // https://memento-mori-calendar.vercel.app/
 // const dataNastere = ref("2000-01-21");
-const dataNastere = ref("2000-10-08");
+const dataNastere = ref(null);
 const now = new Date();
 const nrOfDecades = 8;
 const decadesLived = ref(0);
@@ -53,18 +53,23 @@ const isEnabled = (decade, week) => {
       id="dataNastere"
     />
   </div>
-  <p class="text-gray-600 mt-2 text-center">
-    Mai sunt
-    <!--<pre>{{ leftWeeksLived %52 }}</pre>-->
-    <span class="font-bold">{{ 52 - ((leftWeeksLived % 52) - 1) }}</span> de
-    săptămâni până la ziua ta
-  </p>
-  <p v-if="!isYourBirthday" class="text-gray-600 mt-2 text-center">
-    și <span class="font-bold">≈ {{ leftToLive }}</span> de săptamani de trait.
-  </p>
-  <p v-else class="text-gray-600 mt-2 text-center">
-    <span class="font-extrabold text-3xl">La mulți ani!{{ "\u{1F973}" }}</span>
-  </p>
+  <div v-if="dataNastere">
+    <p class="text-gray-600 mt-2 text-center">
+      Mai sunt
+      <!--<pre>{{ leftWeeksLived %52 }}</pre>-->
+      <span class="font-bold">{{ 52 - ((leftWeeksLived % 52) - 1) }}</span> de
+      săptămâni până la ziua ta
+    </p>
+    <p v-if="!isYourBirthday" class="text-gray-600 mt-2 text-center">
+      și <span class="font-bold">≈ {{ leftToLive }}</span> de săptamani de
+      trait.
+    </p>
+    <p v-else class="text-gray-600 mt-2 text-center">
+      <span class="font-extrabold text-3xl"
+        >La mulți ani!{{ "\u{1F973}" }}</span
+      >
+    </p>
+  </div>
   <div class="calendar">
     <div class="decade" v-for="decade in nrOfDecades" :key="decade">
       <div class="decade-weeks">

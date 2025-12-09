@@ -1,4 +1,5 @@
 <script setup>
+import { Edit, Trash } from "lucide-vue-next";
 const { $api } = useNuxtApp();
 const users = ref(null);
 const router = useRouter();
@@ -29,7 +30,7 @@ async function fetchUsers() {
       params: { page: page.value },
     });
     users.value = resp;
-    console.log(users.value);
+    // console.log(users.value);
   } catch (error) {
     console.log(error);
   } finally {
@@ -107,18 +108,16 @@ async function handlePageChange(newPage) {
         </td>
         <td class="px-4 py-2">
           <div class="flex items-center gap-2 text-gray-400">
-            <button title="Edit" class="hover:text-gray-600">
-              <IconsEdit
-                @click="
-                  router.push({
-                    name: 'users-edit-user-id',
-                    params: { id: row.id },
-                  })
-                "
-                class="h-4 w-4"
-              />
+            <button
+              @click="
+                router.push({
+                  name: 'users-edit-user-id',
+                  params: { id: row.id },
+                })
+              "
+            >
+              <Edit color="blue" class="h-5 w-5" />
             </button>
-
             <button
               @click="
                 () => {
@@ -128,7 +127,7 @@ async function handlePageChange(newPage) {
               "
               title="Delete"
             >
-              <IconsDelete class="h-4 w-4" />
+              <Trash color="red" class="h-5 w-5" />
             </button>
           </div>
         </td>

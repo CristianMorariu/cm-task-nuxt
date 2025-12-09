@@ -20,6 +20,7 @@ const emit = defineEmits<{ (e: "update:modelValue", v: string): void }>();
       :type="type"
       :value="modelValue"
       :placeholder="placeholder"
+      autocomplete="off"
       @input="
         emit('update:modelValue', ($event.target as HTMLInputElement).value)
       "

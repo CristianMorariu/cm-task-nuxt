@@ -24,7 +24,7 @@ const prop = defineProps(["isOpen"]);
           class="w-auto h-auto block md:hidden"
         />
       </div>
-      <nav class="">
+      <nav class="mt-3">
         <div class="flex flex-col items-stretch">
           <NuxtLink
             :to="{ name: 'index' }"

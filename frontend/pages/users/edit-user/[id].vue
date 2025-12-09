@@ -2,39 +2,31 @@
 const { $api } = useNuxtApp();
 const router = useRouter();
 const route = useRoute();
-console.log(route.params);
 const user = ref({});
 const errors = ref({});
 const rolesOptions = ref([]);
+
 onMounted(async () => {
   const response = await $api.get(`/api/users/${route.params.id}`);
   user.value = response.data;
   const getRoles = await $api.get("/api/meta/roles");
   rolesOptions.value = getRoles.data.reverse();
-
-  console.log(response);
+  // console.log(response.data);
 });
 
 async function submit() {
   try {
-    console.log(user.value);
     const fd = new FormData();
-    // await $api.post(`/api/users/${userId}`, fd);
     if (user.value.username) fd.append("username", user.value.username);
     if (user.value.email) fd.append("email", user.value.email);
     if (user.value.fullName) fd.append("fullName", user.value.fullName);
     if (user.value.role) fd.append("role", user.value.role);
     if (user.value.password) fd.append("password", user.value.password);
-
-    // fișierul (dacă e selectat)
-    if (user.value.avatar instanceof File) {
-      fd.append("avatar", user.value.avatar, user.value.avatar.name);
+    if (user.value.avatar_url instanceof File) {
+      fd.append("avatar", user.value.avatar_url);
     }
     fd.append("_method", "PATCH");
-
-    const response = await $api.post(`/api/users/${user.value.id}`, fd);
-
-    console.log(response.data);
+    await $api.post(`/api/users/${user.value.id}`, fd);
     router.push({ name: "users" });
   } catch (error) {
     console.log(error);
@@ -50,7 +42,10 @@ async function submit() {
       Edit user: <span>{{ user.username }}</span>
     </h1>
 
-    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/70">
+    <form
+      @submit.prevent=""
+      class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/70"
+    >
       <!-- grid 2 coloane -->
       <div class="grid gap-5 sm:grid-cols-2 flex-wrap">
         <div class="flex flex-col gap-3">
@@ -82,11 +77,6 @@ async function submit() {
             {{ errors?.password[0] }}
           </div>
         </div>
-        <!-- <div class="mt-6">
-        <p class="mb-2 text-slate-600 font-medium">Add documents and files</p>
-        <UiFileList v-model="form.files" />
-        </div> -->
-
         <div class="flex flex-col">
           <UiAvatarInput
             v-model="user.avatar_url"
@@ -137,11 +127,9 @@ async function submit() {
       </div>
 
       <div class="my-5 flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <UiButton intent="secondary">RESET</UiButton>
-
         <UiButton type="button" @click="submit"> EDIT USER </UiButton>
       </div>
-    </div>
+    </form>
   </div>
 </template>
 

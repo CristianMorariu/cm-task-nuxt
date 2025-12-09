@@ -29,7 +29,7 @@ const emit = defineEmits<{
 
 const currentPage = computed(() => props.meta?.current_page ?? 1);
 const lastPage = computed(() => props.meta?.last_page ?? 1);
-console.log(props);
+
 type PageItem = number | "dots";
 
 const pageItems = computed<PageItem[]>(() => {
