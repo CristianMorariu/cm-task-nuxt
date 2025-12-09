@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateProjectRequest;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectController extends Controller
 {
@@ -16,6 +17,7 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
+        Gate::authorize('projects.view');
         $query = Project::query()
         ->with(['supervisor:id,username,email,avatar'])
         ->withCount('tasks');
@@ -42,6 +44,7 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request)
     {
+        Gate::authorize('projects.manage'); 
         $data = $request->validated();
 
         $project = new Project($data);
@@ -60,6 +63,7 @@ class ProjectController extends Controller
      */
     public function show(string $id)
     {
+        Gate::authorize('projects.view');
         $project = Project::with(['supervisor:id,username,email,avatar'])->findOrFail($id);
         return new ProjectResource($project);
     }
@@ -69,6 +73,7 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, string $id)
     {
+        Gate::authorize('projects.manage');
         $project = Project::findOrFail($id);
         $project->update($request->validated());
         $project->load(['supervisor:id,username,email,avatar','tasks']);
@@ -81,6 +86,7 @@ class ProjectController extends Controller
      */
     public function destroy(string $id)
     {
+        Gate::authorize('projects.manage');
         $project = Project::findOrFail($id);
         $project->delete();
 

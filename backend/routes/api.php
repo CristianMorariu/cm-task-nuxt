@@ -19,18 +19,37 @@ Route::get('/meta/roles', function () {
     });
 });
 Route::middleware('auth:sanctum')->group(function () {
+
+    /**
+     * USERS – doar Admin (users.manage gate).
+     */
+    Route::middleware('can:users.manage')->group(function () {
+        Route::apiResource('users', UserController::class);
+    });
+
+    /**
+     * PROJECTS – toți pot vedea, doar Manager+Admin pot crea/edita/șterge.
+     */
     Route::apiResource('projects', ProjectController::class);
-    Route::apiResource('users', UserController::class);
-});
-Route::middleware('auth:sanctum')->group(function () {
+
     Route::get('/me', [ProfileController::class, 'show']);
     Route::patch('/me', [ProfileController::class, 'update']);
     Route::patch('/me/password', [ProfileController::class, 'updatePassword']);
-});
-Route::middleware('auth:sanctum')->group(function () {
+
+    /**
+     * TASKS REST – manager/admin au voie să modifice; user poate vedea.
+     * Controlăm în TaskController cu $this->authorize().
+     */
     Route::apiResource('projects.tasks', TaskController::class)->shallow();
 
-    Route::get('/my-tasks', [TaskController::class, 'myTasks']);
-    Route::post('/tasks/{task}/take', [TaskController::class, 'take']);
-    Route::patch('/tasks/{task}/status', [TaskController::class, 'updateStatus']);
+    /**
+     * TASKS extra endpoints.
+     */
+    Route::get('/my-tasks', [TaskController::class, 'myTasks']); // orice user logat
+
+    Route::post('/tasks/{task}/take', [TaskController::class, 'take'])
+        ->middleware('can:tasks.take,task');
+
+    Route::patch('/tasks/{task}/status', [TaskController::class, 'updateStatus'])
+        ->middleware('can:tasks.update-status,task');
 });
