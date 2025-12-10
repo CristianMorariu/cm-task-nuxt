@@ -1,4 +1,9 @@
-type AuthUser = { id: number; username: string; email: string };
+type AuthUser = {
+  id: number;
+  username: string;
+  abilities: string[];
+  email: string;
+};
 
 export function useAuth() {
   const user = useState<AuthUser | null>("auth:user", () => null);

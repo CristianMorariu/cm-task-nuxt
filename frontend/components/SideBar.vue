@@ -2,6 +2,7 @@
 const auth = useAuth();
 const router = useRouter();
 const prop = defineProps(["isOpen"]);
+const { userCan } = usePermissions();
 </script>
 <template>
   <aside
@@ -46,6 +47,7 @@ const prop = defineProps(["isOpen"]);
             <span class="menu-item">Projects</span>
           </NuxtLink>
           <NuxtLink
+            v-if="userCan('users.manage')"
             :to="{ name: 'users' }"
             active-class="sidebar-item--active"
             exact-active-class="sidebar-item--active"

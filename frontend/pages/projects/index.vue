@@ -8,7 +8,7 @@ const router = useRouter();
 const toast = useToast();
 const projectToDelete = ref();
 const openDelete = ref(false);
-
+const { userCan } = usePermissions();
 onMounted(() => {
   refreshProjects();
 });
@@ -62,6 +62,7 @@ async function deleteProject() {
             </div>
 
             <button
+              v-if="userCan('projects.manage')"
               @click="
                 router.push({
                   name: 'projects-edit-project-id',
@@ -72,6 +73,7 @@ async function deleteProject() {
               <Edit color="blue" class="h-5 w-5" />
             </button>
             <button
+              v-if="userCan('projects.manage')"
               @click="
                 () => {
                   projectToDelete = project.id;
