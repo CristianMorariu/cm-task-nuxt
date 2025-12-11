@@ -85,6 +85,7 @@ class User extends Authenticatable
         $abilities[] = 'tasks.manage';
         $abilities[] = 'tasks.update-status';
         $abilities[] = 'tasks.take';
+        $abilities[] = 'users.view';
     }
 
     if ($this->role === UserRole::User) {

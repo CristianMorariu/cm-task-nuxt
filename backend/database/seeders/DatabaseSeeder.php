@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
@@ -16,33 +17,55 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-      User::updateOrCreate(
-     ['email' => 'admin@gmail.com'],
+        //Admin fix
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@gmail.com'],
             [
-                'username'   => 'admin',
-                'full_name'  => 'Site Administrator',
-                'role'       => \App\Enums\UserRole::Admin,
-                'password'   => Hash::make('Password'),
+                'username'  => 'admin',
+                'full_name' => 'Site Administrator',
+                'role'      => UserRole::Admin,
+                'password'  => Hash::make('Password'),
             ]
-    );
+        );
 
-    // 2. câțiva useri random
-    User::factory()->count(5)->create();
+        $managers = User::factory()
+            ->count(2)
+            ->state(fn () => ['role' => UserRole::Manager])
+            ->create();
 
-    // 3. proiecte (alegând random useri existenți)
-    $owner = User::inRandomOrder()->first();
-    $supervisor = User::where('id', '!=', $owner->id)->inRandomOrder()->first();
 
-    Project::factory()
-        ->count(9)
-        ->active()
-        ->create([
-            'user_id'       => $owner->id,
-            'supervisor_id' => $supervisor?->id,
-            'deadline'      => now()->addMonths(2)->toDateString(),
-        ]);
+        $users = User::factory()
+            ->count(5)
+            ->state(fn () => ['role' => UserRole::User])
+            ->create();
 
-    // 4. tasks random distribuite pe proiecte și useri
-    Task::factory()->count(30)->create();
+
+        $allUsers = $managers->concat($users)->prepend($admin);
+
+
+        $projects = Project::factory()
+            ->count(9)
+            ->active()
+            ->state(function () use ($admin, $managers) {
+                return [
+                    'user_id'       => $admin->id,
+                    'supervisor_id' => $managers->random()->id,
+                    'deadline'      => now()->addDays(rand(7, 90)),
+                ];
+            })
+            ->create();
+
+        // Task-uri pentru fiecare proiect
+        $projects->each(function (Project $project) use ($allUsers) {
+            Task::factory()
+                ->count(rand(3, 7))
+                ->state(function () use ($project, $allUsers) {
+                    return [
+                        'project_id' => $project->id,
+                        'user_id'    => $allUsers->random()->id,
+                    ];
+                })
+                ->create();
+        });
     }
 }

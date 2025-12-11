@@ -34,6 +34,16 @@ Gate::define('users.manage', function (User $user): bool {
     return $roleValue === UserRole::Admin->value;
 });
 
+Gate::define('users.view', function (User $user): bool {
+    $roleValue = $user->role instanceof UserRole
+        ? $user->role->value
+        : $user->role;
+
+    return in_array($roleValue, [
+        UserRole::Admin->value,
+        UserRole::Manager->value,
+    ], true);
+});
 // PROJECTS: toți pot vedea
 Gate::define('projects.view', fn (User $user) => true);
 
@@ -94,10 +104,16 @@ Route::get('/meta/roles', function () {
     });
 });
 Route::middleware('auth:sanctum')->group(function () {
-    // USERS – doar Admin
-    Route::middleware('can:users.manage')->group(function () {
-        Route::apiResource('users', UserController::class);
-    });
+Route::get('users', [UserController::class, 'index'])
+        ->middleware('can:users.view');
+
+    Route::get('users/{user}', [UserController::class, 'show'])
+        ->middleware('can:users.view');
+
+    // CREATE / UPDATE / DELETE – doar Admin
+    Route::apiResource('users', UserController::class)
+        ->except(['index', 'show'])
+        ->middleware('can:users.manage');
 
     // PROJECTS – toți pot vedea, Manager+Admin modifică (control în controller)
     Route::apiResource('projects', ProjectController::class);

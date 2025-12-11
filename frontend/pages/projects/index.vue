@@ -44,6 +44,7 @@ async function deleteProject() {
     <h2 class="text-5xl font-semibold text-slate-700">Projects</h2>
 
     <UiButton
+      v-if="userCan('projects.manage')"
       @click="router.push({ name: 'projects-create-project' })"
       class="bg-[#00C7C7] hover:bg-[#00B7B7]"
       >ADD PROJECT</UiButton
@@ -93,9 +94,9 @@ async function deleteProject() {
 
       <template #footer>
         <footer class="mt-4 flex items-center justify-between">
-          <div class="flex items-center gap-3">
+          <div v-if="project?.supervisor" class="flex items-center gap-3">
             <img
-              :src="project.supervisor.avatarUrl ?? UserPlaceholder"
+              :src="project?.supervisor?.avatarUrl ?? UserPlaceholder"
               alt=""
               class="h-8 w-8 rounded-full object-cover ring-1 ring-black/10"
             />
