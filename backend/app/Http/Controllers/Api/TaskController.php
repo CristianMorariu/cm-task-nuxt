@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\TaskResource;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use Illuminate\Support\Facades\Gate;
 
 class TaskController extends Controller
 {
@@ -36,6 +37,7 @@ class TaskController extends Controller
     // POST /api/projects/{project}/tasks
     public function store(StoreTaskRequest $request, Project $project)
     {
+        Gate::authorize('tasks.manage');
         $data = $request->validated();
         $data['project_id'] = $project->id;
 
@@ -60,6 +62,7 @@ class TaskController extends Controller
     // PATCH /api/tasks/{task}
     public function update(UpdateTaskRequest $request, Task $task)
     {
+        Gate::authorize('tasks.manage');
         $task->update($request->validated());
 
         return new TaskResource($task->fresh()->load(['project','assignee']));
@@ -68,6 +71,7 @@ class TaskController extends Controller
     // DELETE /api/tasks/{task}
     public function destroy(Task $task)
     {
+        Gate::authorize('tasks.manage');
         $task->delete();
 
         return response()->noContent(); // 204
@@ -88,6 +92,7 @@ class TaskController extends Controller
     // POST /api/tasks/{task}/take
     public function take(Task $task, Request $request)
     {
+        Gate::authorize('tasks.take', $task);
         // dacă e deja asignat altcuiva → eroare
         if ($task->user_id && $task->user_id !== $request->user()->id) {
             return response()->json([
@@ -109,7 +114,8 @@ class TaskController extends Controller
     }
 
     public function updateStatus(Request $request, Task $task)
-{
+    {
+    Gate::authorize('tasks.update-status', $task);
     $request->validate([
         'status' => ['required', 'in:todo,doing,done'],
     ]);

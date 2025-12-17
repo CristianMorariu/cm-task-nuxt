@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 
 const route = useRoute();
 const { $api } = useNuxtApp();
-
+const toast = useToast();
 const task = ref<any>(null);
 const loading = ref(true);
 const saving = ref(false);
@@ -30,6 +30,10 @@ async function updateStatus(newStatus: string) {
       status: newStatus,
     });
     fetchTask();
+    toast.success({
+      title: "Status actualizat",
+      message: "Statusul a fost actualizat cu success.",
+    });
   } finally {
     saving.value = false;
   }

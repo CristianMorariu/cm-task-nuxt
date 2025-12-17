@@ -5,6 +5,7 @@ const route = useRoute();
 const user = ref({});
 const errors = ref({});
 const rolesOptions = ref([]);
+const toast = useToast();
 
 onMounted(async () => {
   const response = await $api.get(`/api/users/${route.params.id}`);
@@ -28,6 +29,10 @@ async function submit() {
     fd.append("_method", "PATCH");
     await $api.post(`/api/users/${user.value.id}`, fd);
     router.push({ name: "users" });
+    toast.success({
+      title: "User actualizat",
+      message: "Utilizatorul a fost actualizat cu success.",
+    });
   } catch (error) {
     console.log(error);
     errors.value = error.response?.data?.errors ?? {

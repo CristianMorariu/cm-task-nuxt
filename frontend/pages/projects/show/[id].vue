@@ -1,5 +1,6 @@
 <script setup>
 import { Edit, Trash } from "lucide-vue-next";
+const { userCan } = usePermissions();
 const toast = useToast();
 
 const { $api } = useNuxtApp();
@@ -30,8 +31,6 @@ onMounted(async () => {
     const resp = await $api.get(`/api/projects/${route.params.id}`);
     project.value = resp.data;
     await refreshTasks();
-    const usr = await $api.get("/api/users");
-    users.value = usr.data;
   } catch (error) {
     console.log(error);
     toast.error({
@@ -53,7 +52,11 @@ const refreshTasks = async (status) => {
   });
   tasks.value = resp1.data;
 };
-
+const handleCreateTask = async () => {
+  const usr = await $api.get("/api/users");
+  users.value = usr.data;
+  addTaskModal.value = true;
+};
 const createTask = () => {
   $api
     .post(`/api/projects/${project.value.id}/tasks`, newTask)
@@ -189,8 +192,9 @@ function statusClass(s) {
       <h2 class="text-xl font-semibold text-slate-900">Tasks</h2>
       <div class="flex gap-5">
         <button
+          v-if="userCan('tasks.manage')"
           class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
-          @click="addTaskModal = true"
+          @click="handleCreateTask"
         >
           <span class="text-sm">Add new task</span>
         </button>
@@ -231,6 +235,7 @@ function statusClass(s) {
 
           <div class="flex items-center gap-3 text-slate-400">
             <button
+              v-if="userCan('tasks.manage')"
               @click="
                 () => {
                   taskToEdit = { ...task };
@@ -242,6 +247,7 @@ function statusClass(s) {
               <Edit color="blue" />
             </button>
             <button
+              v-if="userCan('tasks.manage')"
               @click="
                 () => {
                   taskToDelete = task.id;

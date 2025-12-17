@@ -24,6 +24,7 @@ class LoginController extends Controller
                     'username' => $user->username,
                     'fullName'  => $user->full_name,
                     'role'      => $user->role->value,
+                    'abilities'  => $user->abilities(),
                     'avatar_url' => $user->avatar
                         ? Storage::disk('public')->url($user->avatar)
                         : null,
@@ -67,6 +68,7 @@ class LoginController extends Controller
                     'username' => $user->username,
                     'fullName'  => $user->full_name,
                     'role'      => $user->role->value,
+                    'abilities'  => $user->abilities(),
                     'avatar_url' => $user->avatar
                         ? Storage::disk('public')->url($user->avatar)
                         : null,

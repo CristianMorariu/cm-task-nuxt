@@ -8,7 +8,7 @@ const router = useRouter();
 const toast = useToast();
 const projectToDelete = ref();
 const openDelete = ref(false);
-
+const { userCan } = usePermissions();
 onMounted(() => {
   refreshProjects();
 });
@@ -44,6 +44,7 @@ async function deleteProject() {
     <h2 class="text-5xl font-semibold text-slate-700">Projects</h2>
 
     <UiButton
+      v-if="userCan('projects.manage')"
       @click="router.push({ name: 'projects-create-project' })"
       class="bg-[#00C7C7] hover:bg-[#00B7B7]"
       >ADD PROJECT</UiButton
@@ -62,6 +63,7 @@ async function deleteProject() {
             </div>
 
             <button
+              v-if="userCan('projects.manage')"
               @click="
                 router.push({
                   name: 'projects-edit-project-id',
@@ -72,6 +74,7 @@ async function deleteProject() {
               <Edit color="blue" class="h-5 w-5" />
             </button>
             <button
+              v-if="userCan('projects.manage')"
               @click="
                 () => {
                   projectToDelete = project.id;
@@ -91,9 +94,9 @@ async function deleteProject() {
 
       <template #footer>
         <footer class="mt-4 flex items-center justify-between">
-          <div class="flex items-center gap-3">
+          <div v-if="project?.supervisor" class="flex items-center gap-3">
             <img
-              :src="project.supervisor.avatarUrl ?? UserPlaceholder"
+              :src="project?.supervisor?.avatarUrl ?? UserPlaceholder"
               alt=""
               class="h-8 w-8 rounded-full object-cover ring-1 ring-black/10"
             />

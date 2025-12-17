@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             'email'     => $this->email,
             'fullName'  => $this->full_name,
             'role'      => $this->role->value,   // 'admin' | 'manager' | 'user'
+            'abilities' => $this->abilities(),
             'avatar'    => $this->avatar, // path brut
              'avatar_url' => $this->avatar
                 ? Storage::disk('public')->url($this->avatar)
