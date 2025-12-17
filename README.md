@@ -1,4 +1,4 @@
-# cmTask
+# TaskBox
 
 Aplicație pentru managementul proiectelor și task-urilor, construită cu:
 
@@ -31,18 +31,22 @@ cd <folder-proiect>
 
 cd backend
 
-# Instalează dependențele PHP
+# 1. Dependențe
 composer install
 
-# Copiază .env.example în .env
+# 2. .env
 cp .env.example .env
 
-# Generează APP_KEY
+# 3. Cheie aplicație
 php artisan key:generate
 
-# Rulează migrările + seed
+# 4. Migrare + seed (dev)
 php artisan migrate:fresh --seed
 
+# 5. Link pentru fișiere (avataruri, poze etc.)
+php artisan storage:link
+
+# 6. Rulează serverul dev
 php artisan serve
 
 2.2. Frontend (Nuxt 3)
